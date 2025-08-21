@@ -30,7 +30,7 @@ jobs:
           REPO_NAME_ESC=$(printf "%s" "$REPO_NAME" | html_escape)
           COMMIT_ESC=$(printf "%s" "$HEAD_MSG_FIRST_LINE" | html_escape)
 
-          TEXT="<b>📣 មានការផ្លាស់ប្តូរថ្មី 🚀</b>\n🔹 <b>Project:</b> ${REPO_NAME_ESC}\n🔹 <b>Branch:</b> ${BRANCH_ESC}\n🔹 <b>អ្នកប្ដូរ:</b> ${AUTHOR_ESC}\n🔹 <b>Commit:</b> ${COMMIT_ESC}\n\n<a href=\"${COMPARE_URL}\">មើលការផ្លាស់ប្តូរ</a>"
+          TEXT="<b>📣 មានការផ្លាស់ប្តូរថ្មី 🚀</b>\n🔹 <b>Project:</b> ${REPO_NAME_ESC}\n🔹 <b>Branch:</b> ${BRANCH_ESC}\n🔹 <b>អ្នកផ្លាស់ប្ដូរ:</b> ${AUTHOR_ESC}\n🔹 <b>Commit:</b> ${COMMIT_ESC}\n\n<a href=\"${COMPARE_URL}\">មើលការផ្លាស់ប្តូរ</a>"
 
           printf "%b" "$TEXT" > message.txt
           echo "message_file=message.txt" >> "$GITHUB_OUTPUT"
