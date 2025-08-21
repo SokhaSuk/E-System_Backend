@@ -1,7 +1,4 @@
-/**
- * Student routes.
- * Accessible by users with roles: student, admin.
- */
+
 import { Router } from 'express';
 import { requireAuth, requireRoles } from '../middleware/auth';
 
