@@ -12,5 +12,6 @@ router.get('/student/courses', async (_req, res) => {
 });
 //same for student/courses/id
 export default router;
+/////
 
 
