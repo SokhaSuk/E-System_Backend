@@ -1,7 +1,7 @@
 /**
  * Course management routes.
  */
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
 import { validate, commonSchemas } from '../middleware/validation';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -71,7 +71,7 @@ router.get('/',
 		}
 
 		const skip = (Number(page) - 1) * Number(limit);
-		const sort = { [String(sortBy)]: sortOrder === 'desc' ? -1 : 1 };
+		const sort: any = { [String(sortBy)]: sortOrder === 'desc' ? -1 : 1 };
 
 		const [courses, total] = await Promise.all([
 			CourseModel.find(filter)

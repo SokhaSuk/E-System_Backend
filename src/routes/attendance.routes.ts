@@ -1,7 +1,7 @@
 /**
  * Attendance management routes.
  */
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
 import { validate, commonSchemas } from '../middleware/validation';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -76,7 +76,7 @@ router.get('/',
 		if (status) filter.status = status;
 
 		const skip = (Number(page) - 1) * Number(limit);
-		const sort = { [String(sortBy)]: sortOrder === 'desc' ? -1 : 1 };
+		const sort: any = { [String(sortBy)]: sortOrder === 'desc' ? -1 : 1 };
 
 		const [attendance, total] = await Promise.all([
 			AttendanceModel.find(filter)
@@ -225,7 +225,11 @@ router.post('/bulk',
 		}));
 
 		const savedAttendance = await AttendanceModel.insertMany(attendanceRecords);
-		await AttendanceModel.populate(savedAttendance, ['student', 'course', 'recordedBy']);
+		await AttendanceModel.populate(savedAttendance, [
+			{ path: 'student', select: 'fullName email' },
+			{ path: 'course', select: 'title code' },
+			{ path: 'recordedBy', select: 'fullName' }
+		]);
 
 		res.status(201).json({
 			message: 'Bulk attendance recorded successfully',

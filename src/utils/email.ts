@@ -25,7 +25,7 @@ export interface EmailData {
 
 // Create transporter
 const createTransporter = () => {
-	return nodemailer.createTransporter({
+	return nodemailer.createTransport({
 		host: env.smtp.host,
 		port: env.smtp.port,
 		secure: env.smtp.secure,
