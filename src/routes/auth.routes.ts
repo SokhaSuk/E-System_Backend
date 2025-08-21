@@ -34,7 +34,7 @@ router.post('/auth/register', async (req, res) => {
 
 		const passwordHash = await hashPassword(password);
 		const user = await UserModel.create({ fullName, email, passwordHash, role: finalRole });
-		return res.status(201).json({ id: user.id, fullName: user.fullName, email: user.email, role: user.role });
+		return res.status(201).json({ id: user._id.toString(), fullName: user.fullName, email: user.email, role: user.role });
 	} catch (err) {
 		return res.status(500).json({ message: 'Registration failed' });
 	}
@@ -51,8 +51,8 @@ router.post('/auth/login', async (req, res) => {
 		if (!ok) {
 			return res.status(401).json({ message: 'Invalid credentials' });
 		}
-		const token = jwt.sign({ userId: user.id, role: user.role }, env.jwtSecret, { expiresIn: '7d' });
-		return res.json({ token, user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role } });
+		const token = jwt.sign({ userId: user._id.toString(), role: user.role }, env.jwtSecret, { expiresIn: '7d' });
+		return res.json({ token, user: { id: user._id.toString(), fullName: user.fullName, email: user.email, role: user.role } });
 	} catch {
 		return res.status(500).json({ message: 'Login failed' });
 	}

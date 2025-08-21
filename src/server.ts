@@ -23,7 +23,7 @@ async function bootstrap() {
 	app.use('/api', teacherRoutes);
 	app.use('/api', studentRoutes);
 
-	app.use((req, res) => res.status(404).json({ message: 'Not found' }));
+	app.use((req, res, _next) => res.status(404).json({ message: 'Not found' }));
 
 	app.listen(env.port, () => {
 		console.log(`API listening on port ${env.port}`);
