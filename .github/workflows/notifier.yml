@@ -9,9 +9,34 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
+      - name: Build Telegram message
+        id: build_message
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          REPO="${{ github.repository }}"
+          ACTOR="${{ github.actor }}"
+
+          COMMIT_LINES=$(jq -r '
+            .commits
+            | map("- " + (.id[0:7]) + " " + (.message | split("\n")[0]))
+            | .[0:10]
+            | join("\n")
+          ' "$GITHUB_EVENT_PATH")
+
+          if [ -z "$COMMIT_LINES" ]; then
+            COMMIT_LINES="- No commit messages found"
+          fi
+
+          COMPARE_URL="https://github.com/${REPO}/compare/${{ github.event.before }}...${{ github.event.after }}"
+
+          TEXT="🚀 Push to ${REPO} (${BRANCH}) by ${ACTOR}\n\n${COMMIT_LINES}\n\n🔗 ${COMPARE_URL}"
+
+          printf "%b" "$TEXT" > message.txt
+          echo "message_file=message.txt" >> "$GITHUB_OUTPUT"
+
       - name: Send Telegram Message
         run: |
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="🚀 New push by ${{ github.actor }} in ${{ github.repository }}: ${{ github.event.head_commit.message }}"
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            --data-urlencode chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            --data-urlencode text@${{ steps.build_message.outputs.message_file }}
 
