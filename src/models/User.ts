@@ -1,7 +1,15 @@
+/**
+ * User domain model (Mongoose).
+ *
+ * Defines the `User` schema and TypeScript types used across the API.
+ */
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export type UserRole = 'admin' | 'teacher' | 'student';
 
+/**
+ * Mongoose User document shape.
+ */
 export interface UserDocument extends Document {
 	_id: Types.ObjectId;
 	fullName: string;
@@ -12,6 +20,9 @@ export interface UserDocument extends Document {
 	updatedAt: Date;
 }
 
+/**
+ * Schema describing persisted User fields and constraints.
+ */
 const userSchema = new Schema<UserDocument>(
 	{
 		fullName: { type: String, required: true, trim: true },
@@ -22,6 +33,9 @@ const userSchema = new Schema<UserDocument>(
 	{ timestamps: true }
 );
 
+/**
+ * Exported Mongoose model for CRUD operations on Users.
+ */
 export const UserModel = mongoose.model<UserDocument>('User', userSchema);
 
 

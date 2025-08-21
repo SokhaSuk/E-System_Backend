@@ -1,3 +1,11 @@
+/**
+ * Application HTTP server entrypoint.
+ *
+ * - Initializes database connection
+ * - Configures Express middlewares (CORS, JSON parsing, logging)
+ * - Mounts feature routers under `/api`
+ * - Exposes a simple `/health` probe
+ */
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -8,6 +16,9 @@ import adminRoutes from './routes/admin.routes';
 import teacherRoutes from './routes/teacher.routes';
 import studentRoutes from './routes/student.routes';
 
+/**
+ * Boots the server after a successful DB connection.
+ */
 async function bootstrap() {
 	await connectToDatabase();
 	const app = express();
@@ -23,6 +34,7 @@ async function bootstrap() {
 	app.use('/api', teacherRoutes);
 	app.use('/api', studentRoutes);
 
+	// Fallback 404 for unmatched routes
 	app.use((req, res, _next) => res.status(404).json({ message: 'Not found' }));
 
 	app.listen(env.port, () => {

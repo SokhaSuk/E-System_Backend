@@ -1,3 +1,9 @@
+/**
+ * Authentication routes.
+ *
+ * - POST /auth/register: Register a new user
+ * - POST /auth/login: Log a user in and return a JWT
+ */
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserModel } from '../models/User';
@@ -6,6 +12,10 @@ import { env } from '../config/env';
 
 const router = Router();
 
+/**
+ * Registers a new user account.
+ * Body: { fullName, email, password, role?, adminCode? }
+ */
 router.post('/auth/register', async (req, res) => {
 	try {
 		const { fullName, email, password, role, adminCode } = req.body as {
@@ -40,6 +50,10 @@ router.post('/auth/register', async (req, res) => {
 	}
 });
 
+/**
+ * Authenticates an existing user and returns a signed JWT.
+ * Body: { email, password }
+ */
 router.post('/auth/login', async (req, res) => {
 	try {
 		const { email, password } = req.body as { email: string; password: string };

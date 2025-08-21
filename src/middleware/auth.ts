@@ -1,7 +1,14 @@
+/**
+ * Authentication and authorization middlewares.
+ *
+ * - `requireAuth` validates a JWT bearer token and attaches `req.auth`
+ * - `requireRoles` ensures the authenticated user has one of the allowed roles
+ */
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 
+/** Shape of JWT payload used by the API. */
 export interface AuthPayload {
 	userId: string;
 	role: 'admin' | 'teacher' | 'student';
@@ -15,6 +22,11 @@ declare global {
 	}
 }
 
+/**
+ * Validates the Authorization header and decodes the JWT.
+ *
+ * On success attaches `req.auth` and calls `next()`; otherwise replies with 401.
+ */
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
 	const authHeader = req.headers.authorization;
 	if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -30,6 +42,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 	}
 }
 
+/**
+ * Factory that returns a middleware authorizing by role.
+ *
+ * Example: `router.use(requireAuth, requireRoles('admin'))`
+ */
 export function requireRoles(...roles: Array<AuthPayload['role']>) {
 	return (req: Request, res: Response, next: NextFunction) => {
 		if (!req.auth) {
