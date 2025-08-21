@@ -1,8 +1,4 @@
-/**
- * Database connection helper for Mongoose.
- *
- * Establishes a single connection using the `MONGO_URI` from env.
- */
+//Teesting
 import mongoose from 'mongoose';
 import { env } from './env';
 
