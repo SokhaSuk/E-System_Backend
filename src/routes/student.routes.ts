@@ -13,7 +13,7 @@ router.use(requireAuth, requireRoles('student', 'admin'));
 router.get('/student/courses', async (_req, res) => {
 	return res.json({ courses: [] });
 });
-
+//same for student/courses/id
 export default router;
 
 
