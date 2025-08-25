@@ -27,8 +27,8 @@ describe('Authentication Routes', () => {
 	describe('POST /api/auth/register', () => {
 		it('should register a new student successfully', async () => {
 			const userData = {
-				fullName: 'John Doe',
-				email: 'john@example.com',
+				fullName: 'Suk Sokha',
+				email: 'sokha168@gmail.com',
 				password: 'password123',
 				role: 'student'
 			};
@@ -47,8 +47,8 @@ describe('Authentication Routes', () => {
 
 		it('should register an admin with correct admin code', async () => {
 			const userData = {
-				fullName: 'Admin User',
-				email: 'admin@example.com',
+				fullName: 'Sokha',
+				email: 'sokha168@gmail.com',
 				password: 'password123',
 				role: 'admin',
 				adminCode: 'admin123'
