@@ -57,6 +57,9 @@ async function bootstrap() {
 	// Serve static files (uploads)
 	app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+	// Favicon endpoint (handle browser requests)
+	app.get('/favicon.ico', (_req, res) => res.status(204).end());
+
 	// Health check endpoint
 	app.get('/health', (_req, res) => res.json({ 
 		status: 'ok', 
@@ -69,6 +72,7 @@ async function bootstrap() {
 		message: 'E-System API',
 		version: '1.0.0',
 		endpoints: {
+			health: '/health',
 			auth: '/api/auth',
 			admin: '/api/admin',
 			teacher: '/api/teacher',
@@ -77,6 +81,15 @@ async function bootstrap() {
 			attendance: '/api/attendance'
 		}
 	}));
+
+	// Redirect common mistake
+	app.get('/api/health', (_req, res) => {
+		res.status(308).json({
+			message: 'Health endpoint is at /health, not /api/health',
+			redirect: '/health',
+			status: 'permanent_redirect'
+		});
+	});
 
 	// Apply stricter rate limiting to auth routes
 	app.use('/api/auth', authLimiter);

@@ -17,8 +17,10 @@
     "format": "prettier --write src/**/*.ts",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "db:setup": "node database-setup.js",
-    "db:reset": "node database-setup.js --reset"
+    "generate-secrets": "node scripts/generate-secrets.js",
+    "db:test": "node scripts/test-db.js",
+    "test:api": "node scripts/test-api.js",
+    "status": "node scripts/status.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -54,8 +54,10 @@ export const errorHandler = (
 		message = 'Token expired';
 	}
 
-	// Log error in development
-	if (env.nodeEnv === 'development') {
+	// Log error in development (but skip common browser requests and 404s)
+	if (env.nodeEnv === 'development' && 
+		!req.url.includes('favicon.ico') && 
+		statusCode !== 404) {
 		console.error('Error:', {
 			message: err.message,
 			stack: err.stack,

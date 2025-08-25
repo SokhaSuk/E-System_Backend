@@ -48,19 +48,32 @@ A comprehensive educational management system backend built with Node.js, Expres
    ```
 
 3. **Environment Setup**
-   Create a `.env` file in the root directory:
+   
+   **⚠️ SECURITY FIRST:** Never commit your `.env` file to Git!
+   
+   a) Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   b) Generate secure secrets:
+   ```bash
+   npm run generate-secrets
+   ```
+   
+   c) Update your `.env` file with the generated values and your actual configuration:
    ```env
    # Server Configuration
    PORT=4000
    NODE_ENV=development
    
-   # Database
+   # Database (use your actual MongoDB connection string)
    MONGO_URI=mongodb://127.0.0.1:27017/e_system
    
-   # Authentication
-   JWT_SECRET=your-super-secret-jwt-key
+   # Authentication (use the generated JWT_SECRET)
+   JWT_SECRET=your-generated-jwt-secret-here
    JWT_EXPIRES_IN=7d
-   ADMIN_SIGNUP_CODE=admin123
+   ADMIN_SIGNUP_CODE=your-generated-admin-code
    
    # SMTP Configuration (for email notifications)
    SMTP_HOST=smtp.gmail.com
@@ -90,6 +103,39 @@ A comprehensive educational management system backend built with Node.js, Expres
    ```bash
    npm run dev
    ```
+
+## 🔒 Security
+
+### Important Security Notes
+- **NEVER commit `.env` files to Git** - They contain sensitive information
+- **Use strong, unique passwords** for all services
+- **Generate secure JWT secrets** using the provided script
+- **Use HTTPS in production** environments
+- **Regularly update dependencies** to patch security vulnerabilities
+
+### Security Features
+- ✅ Environment variables for all sensitive data
+- ✅ JWT-based authentication with secure secrets
+- ✅ Password hashing with bcrypt
+- ✅ Input validation and sanitization
+- ✅ Rate limiting to prevent abuse
+- ✅ CORS protection
+- ✅ File upload validation
+- ✅ Role-based access control
+
+### Quick Security Setup
+```bash
+# Generate secure secrets
+npm run generate-secrets
+
+# Create environment file
+cp .env.example .env
+
+# Update .env with generated secrets
+# (Edit the file manually with the generated values)
+```
+
+For detailed security information, see [SECURITY.md](./SECURITY.md).
 
 ## 📚 API Documentation
 
