@@ -22,6 +22,7 @@ import teacherRoutes from './routes/teacher.routes';
 import studentRoutes from './routes/student.routes';
 import courseRoutes from './routes/course.routes';
 import attendanceRoutes from './routes/attendance.routes';
+import apiRoutes from './routes/api.routes';
 
 /**
  * Express app instance.
@@ -82,6 +83,14 @@ async function bootstrap() {
 		}
 	}));
 
+
+	app.get("/test", (req, res) => {
+		res.json({
+			message: "Hello World"
+		});
+	});
+
+
 	// Redirect common mistake
 	app.get('/api/health', (_req, res) => {
 		res.status(308).json({
@@ -95,12 +104,13 @@ async function bootstrap() {
 	app.use('/api/auth', authLimiter);
 
 	// Mount API routes
-	app.use('/api/auth', authRoutes);
+	app.use('/api/v1', authRoutes);
 	app.use('/api/admin', adminRoutes);
 	app.use('/api/teacher', teacherRoutes);
 	app.use('/api/student', studentRoutes);
 	app.use('/api/courses', courseRoutes);
 	app.use('/api/attendance', attendanceRoutes);
+	app.use('/api', apiRoutes);
 
 	// 404 handler
 	app.use(notFoundHandler);
