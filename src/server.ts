@@ -100,11 +100,13 @@ async function bootstrap() {
 		});
 	});
 
-	// Apply stricter rate limiting to auth routes
-	app.use('/api/auth', authLimiter);
+	// Apply stricter rate limiting to auth routes (skip in tests)
+	if (env.nodeEnv !== 'test') {
+		app.use('/api/auth', authLimiter);
+	}
 
 	// Mount API routes
-	app.use('/api/v1', authRoutes);
+	app.use('/api/auth', authRoutes);
 	app.use('/api/admin', adminRoutes);
 	app.use('/api/teacher', teacherRoutes);
 	app.use('/api/student', studentRoutes);

@@ -20,8 +20,7 @@
     "generate-secrets": "node scripts/generate-secrets.js",
     "db:test": "node scripts/test-db.js",
     "test:api": "node scripts/test-api.js",
-    "status": "node scripts/status.js",
-    "docs:code": "node scripts/generate-code-docs.js"
+    "status": "node scripts/status.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -5,10 +5,11 @@
  * - POST /auth/login: Log a user in and return a JWT
  */
 import { Router } from 'express';
-import jwt from 'jsonwebtoken';
-import { UserModel } from '../models/User';
-import { verifyPassword, hashPassword } from '../utils/password';
-import { env } from '../config/env';
+import Joi from 'joi';
+import { validate } from '../middleware/validation';
+import { asyncHandler } from '../middleware/errorHandler';
+import { authenticate } from '../middleware/auth';
+import { login, profile, register } from '../controllers/auth.controller';
 
 const router = Router();
 
@@ -17,77 +18,30 @@ const router = Router();
  * Body: { fullName, email, password, role?, adminCode? }
  */
 
-router.get("/test", (req, res) => {
-	res.json({
-		message: "Hello World"
-	});
+// Validation schemas
+const registerSchema = Joi.object({
+	fullName: Joi.string().min(2).required(),
+	email: Joi.string().email().required(),
+	password: Joi.string().min(6).required(),
+	role: Joi.string().valid('admin', 'teacher', 'student').optional(),
+	adminCode: Joi.string().optional()
 });
 
-router.post('/auth/register', async (req, res) => {
-	const email = req.body.email;
-		const password = req.body.password;
-
-
-		res.json({
-			email,
-			password
-		});
-	// try {
-
-		
-		// const { fullName, email, password, role, adminCode } = req.body as {
-		// 	fullName: string;
-		// 	email: string;
-		// 	password: string;
-		// 	role?: 'admin' | 'teacher' | 'student';
-		// 	adminCode?: string;
-		// };
-
-	// 	if (!fullName || !email || !password) {
-	// 		return res.status(400).json({ message: 'fullName, email and password are required' });
-	// 	}
-
-	// 	const existing = await UserModel.findOne({ email });
-	// 	if (existing) {
-	// 		return res.status(409).json({ message: 'Email already in use' });
-	// 	}
-
-	// 	let finalRole: 'admin' | 'teacher' | 'student' = role || 'student';
-	// 	if (finalRole === 'admin') {
-	// 		if (!env.adminSignupCode || adminCode !== env.adminSignupCode) {
-	// 			return res.status(403).json({ message: 'Admin signup code is invalid' });
-	// 		}
-	// 	}
-
-	// 	const passwordHash = await hashPassword(password);
-	// 	const user = await UserModel.create({ fullName, email, passwordHash, role: finalRole });
-	// 	return res.status(201).json({ id: user._id.toString(), fullName: user.fullName, email: user.email, role: user.role });
-	// } catch (err) {
-	// 	return res.status(500).json({ message: 'Registration failed' });
-	// }
+const loginSchema = Joi.object({
+	email: Joi.string().email().required(),
+	password: Joi.string().min(6).required()
 });
+
+// Routes under /api/auth in server.ts
+router.post('/register', validate({ body: registerSchema }), asyncHandler(register));
+router.post('/login', validate({ body: loginSchema }), asyncHandler(login));
+router.get('/profile', authenticate, asyncHandler(profile));
 
 /**
  * Authenticates an existing user and returns a signed JWT.
  * Body: { email, password }
  */
-router.post('/auth/login', async (req, res) => {
-	try {
-		const { email, password } = req.body as { email: string; password: string };
-		const user = await UserModel.findOne({ email });
-		if (!user) {
-			return res.status(401).json({ message: 'Invalid credentials' });
-		}
-		const ok = await verifyPassword(password, user.passwordHash);
-		if (!ok) {
-			return res.status(401).json({ message: 'Invalid credentials' });
-		}
-		const token = jwt.sign({ userId: user._id.toString(), role: user.role }, env.jwtSecret, { expiresIn: '7d' });
-		return res.json({ token, user: { id: user._id.toString(), fullName: user.fullName, email: user.email, role: user.role } });
-	} catch {
-		return res.status(500).json({ message: 'Login failed' });
-	}
-});
+// Note: actual controller handlers are defined in controllers/auth.controller.ts
 
 export default router;
 
