@@ -1,17 +1,13 @@
 
 import { Router } from 'express';
-import { requireAuth, requireRoles } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
 
 const router = Router();
 
-router.use(requireAuth, requireRoles('student', 'admin'));
+router.use(authenticate, authorize(['student', 'admin']));
 
 /** Placeholder: returns an empty list of courses. */
-router.get('/student/courses', async (_req, res) => {
+router.get('/courses', async (_req, res) => {
 	return res.json({ courses: [] });
 });
-//same for student/courses/id
 export default router;
-/////
-
-

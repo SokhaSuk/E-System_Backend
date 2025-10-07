@@ -31,11 +31,16 @@ export const errorHandler = (
 		message = 'Validation Error';
 	}
 
-	// Handle Mongoose duplicate key errors
-	if (err.code === '11000') {
-		statusCode = 409;
-		message = 'Duplicate field value entered';
-	}
+    // Handle Mongo/Mongoose duplicate key errors
+    // Driver may set code as number 11000; Mongoose may wrap it differently
+    const anyErr: any = err as any;
+    if (anyErr && (anyErr.code === 11000 || anyErr.code === '11000')) {
+        statusCode = 409;
+        // Attempt to extract field name(s)
+        const fields = anyErr.keyValue ? Object.keys(anyErr.keyValue) : [];
+        const fieldList = fields.length ? ` (${fields.join(', ')})` : '';
+        message = `Duplicate value${fieldList}`;
+    }
 
 	// Handle Mongoose cast errors
 	if (err.name === 'CastError') {

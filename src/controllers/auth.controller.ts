@@ -6,6 +6,7 @@ import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { UserModel } from '../models/User';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { env } from '../config/env';
+import { signAuthToken } from '../services/auth.service';
 import { createError } from '../middleware/errorHandler';
 
 /** Converts env JWT_EXPIRES_IN to seconds (supports s/m/h/d) with 7d default. */
@@ -30,9 +31,7 @@ function getExpiresInSeconds(): number {
 
 /** Signs a JWT for the given payload */
 function signToken(payload: { userId: string; role: 'admin' | 'teacher' | 'student' }) {
-	const secret: Secret = env.jwtSecret as unknown as Secret;
-	const options: SignOptions = { expiresIn: getExpiresInSeconds() };
-	return jwt.sign(payload as object, secret, options);
+    return signAuthToken(payload);
 }
 
 /** POST /api/auth/register */
