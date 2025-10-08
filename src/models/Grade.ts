@@ -5,7 +5,13 @@
  */
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
-export type GradeType = 'assignment' | 'quiz' | 'exam' | 'project' | 'participation' | 'final';
+export type GradeType =
+	| 'assignment'
+	| 'quiz'
+	| 'exam'
+	| 'project'
+	| 'participation'
+	| 'final';
 
 export interface GradeDocument extends Document {
 	_id: Types.ObjectId;
@@ -28,10 +34,10 @@ const gradeSchema = new Schema<GradeDocument>(
 	{
 		student: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 		course: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-		gradeType: { 
-			type: String, 
-			enum: ['assignment', 'quiz', 'exam', 'project', 'participation', 'final'], 
-			required: true 
+		gradeType: {
+			type: String,
+			enum: ['assignment', 'quiz', 'exam', 'project', 'participation', 'final'],
+			required: true,
 		},
 		title: { type: String, required: true, trim: true },
 		score: { type: Number, required: true, min: 0 },
@@ -40,13 +46,13 @@ const gradeSchema = new Schema<GradeDocument>(
 		letterGrade: { type: String, required: true },
 		comments: { type: String, trim: true },
 		submittedAt: { type: Date },
-		gradedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true }
+		gradedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 	},
 	{ timestamps: true }
 );
 
 // Pre-save middleware to calculate percentage and letter grade
-gradeSchema.pre('save', function(next) {
+gradeSchema.pre('save', function (next) {
 	if (this.isModified('score') || this.isModified('maxScore')) {
 		this.percentage = (this.score / this.maxScore) * 100;
 		this.letterGrade = calculateLetterGrade(this.percentage);

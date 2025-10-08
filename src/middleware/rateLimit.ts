@@ -19,16 +19,16 @@ export const apiLimiter = rateLimit({
 	max: env.rateLimit.max,
 	message: {
 		message: 'Too many requests from this IP, please try again later.',
-		retryAfter: formatWindowMs(env.rateLimit.windowMs)
+		retryAfter: formatWindowMs(env.rateLimit.windowMs),
 	},
 	standardHeaders: true,
 	legacyHeaders: false,
 	handler: (req: Request, res: Response) => {
 		res.status(429).json({
 			message: 'Too many requests from this IP, please try again later.',
-			retryAfter: formatWindowMs(env.rateLimit.windowMs)
+			retryAfter: formatWindowMs(env.rateLimit.windowMs),
 		});
-	}
+	},
 });
 
 // Stricter limiter for auth routes
@@ -37,7 +37,7 @@ export const authLimiter = rateLimit({
 	max: env.rateLimit.authMax,
 	message: {
 		message: 'Too many authentication attempts, please try again later.',
-		retryAfter: formatWindowMs(env.rateLimit.windowMs)
+		retryAfter: formatWindowMs(env.rateLimit.windowMs),
 	},
 	standardHeaders: true,
 	legacyHeaders: false,
@@ -45,9 +45,9 @@ export const authLimiter = rateLimit({
 	handler: (req: Request, res: Response) => {
 		res.status(429).json({
 			message: 'Too many authentication attempts, please try again later.',
-			retryAfter: formatWindowMs(env.rateLimit.windowMs)
+			retryAfter: formatWindowMs(env.rateLimit.windowMs),
 		});
-	}
+	},
 });
 
 // File upload limiter
@@ -56,8 +56,8 @@ export const uploadLimiter = rateLimit({
 	max: 10, // Limit each IP to 10 uploads per hour
 	message: {
 		message: 'Too many file uploads, please try again later.',
-		retryAfter: '1 hour'
+		retryAfter: '1 hour',
 	},
 	standardHeaders: true,
-	legacyHeaders: false
+	legacyHeaders: false,
 });

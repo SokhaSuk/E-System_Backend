@@ -8,6 +8,10 @@ import teacherRoutes from './teacher.routes';
 import studentRoutes from './student.routes';
 import courseRoutes from './course.routes';
 import attendanceRoutes from './attendance.routes';
+import userRoutes from './user.routes';
+import gradeRoutes from './grade.routes';
+import announcementRoutes from './announcement.routes';
+import dataRoutes from './data.routes';
 
 const router = Router();
 
@@ -18,13 +22,20 @@ router.get('/', (_req, res) => {
 		version: '1.0.0',
 		endpoints: {
 			health: '/health',
-			auth: '/api/auth',
-			admin: '/api/admin',
-			teacher: '/api/teacher',
-			student: '/api/student',
-			courses: '/api/courses',
-			attendance: '/api/attendance'
-		}
+			auth: '/api/v1/auth',
+			admin: '/api/v1/admin',
+			teacher: '/api/v1/teacher',
+			student: '/api/v1/student',
+			courses: '/api/v1/courses',
+			attendance: '/api/v1/attendance',
+			users: '/api/v1/users',
+			grades: '/api/v1/grades',
+			announcements: '/api/v1/announcements',
+		},
+		docs: {
+			openapi: '/openapi.json',
+			swaggerUi: '/api-docs',
+		},
 	});
 });
 
@@ -35,7 +46,9 @@ router.use('/teacher', teacherRoutes);
 router.use('/student', studentRoutes);
 router.use('/courses', courseRoutes);
 router.use('/attendance', attendanceRoutes);
+router.use('/users', userRoutes);
+router.use('/grades', gradeRoutes);
+router.use('/announcements', announcementRoutes);
+router.use('/data', dataRoutes);
 
 export default router;
-
-

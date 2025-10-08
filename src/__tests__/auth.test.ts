@@ -10,7 +10,9 @@ import { hashPassword } from '../utils/password';
 describe('Authentication Routes', () => {
 	beforeAll(async () => {
 		// Connect to test database
-		await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/e_system_test');
+		await mongoose.connect(
+			process.env.MONGO_URI || 'mongodb://localhost:27017/e_system_test'
+		);
 	});
 
 	afterAll(async () => {
@@ -30,7 +32,7 @@ describe('Authentication Routes', () => {
 				fullName: 'Suk Sokha',
 				email: 'sokha168@gmail.com',
 				password: 'password123',
-				role: 'student'
+				role: 'student',
 			};
 
 			const response = await request(app)
@@ -51,7 +53,7 @@ describe('Authentication Routes', () => {
 				email: 'sokha168@gmail.com',
 				password: 'password123',
 				role: 'admin',
-				adminCode: 'admin123'
+				adminCode: 'admin123',
 			};
 
 			const response = await request(app)
@@ -67,13 +69,10 @@ describe('Authentication Routes', () => {
 				fullName: 'Admin User',
 				email: 'admin@example.com',
 				password: 'password123',
-				role: 'admin'
+				role: 'admin',
 			};
 
-			await request(app)
-				.post('/api/auth/register')
-				.send(userData)
-				.expect(400);
+			await request(app).post('/api/auth/register').send(userData).expect(400);
 		});
 
 		it('should reject registration with existing email', async () => {
@@ -82,7 +81,7 @@ describe('Authentication Routes', () => {
 				fullName: 'Existing User',
 				email: 'existing@example.com',
 				passwordHash: await hashPassword('password123'),
-				role: 'student'
+				role: 'student',
 			});
 			await existingUser.save();
 
@@ -90,13 +89,10 @@ describe('Authentication Routes', () => {
 				fullName: 'New User',
 				email: 'existing@example.com',
 				password: 'password123',
-				role: 'student'
+				role: 'student',
 			};
 
-			await request(app)
-				.post('/api/auth/register')
-				.send(userData)
-				.expect(409);
+			await request(app).post('/api/auth/register').send(userData).expect(409);
 		});
 
 		it('should validate required fields', async () => {
@@ -117,7 +113,7 @@ describe('Authentication Routes', () => {
 				fullName: 'Test User',
 				email: 'test@example.com',
 				passwordHash,
-				role: 'student'
+				role: 'student',
 			});
 			await user.save();
 		});
@@ -125,7 +121,7 @@ describe('Authentication Routes', () => {
 		it('should login successfully with correct credentials', async () => {
 			const loginData = {
 				email: 'test@example.com',
-				password: 'password123'
+				password: 'password123',
 			};
 
 			const response = await request(app)
@@ -141,25 +137,19 @@ describe('Authentication Routes', () => {
 		it('should reject login with incorrect password', async () => {
 			const loginData = {
 				email: 'test@example.com',
-				password: 'wrongpassword'
+				password: 'wrongpassword',
 			};
 
-			await request(app)
-				.post('/api/auth/login')
-				.send(loginData)
-				.expect(401);
+			await request(app).post('/api/auth/login').send(loginData).expect(401);
 		});
 
 		it('should reject login with non-existent email', async () => {
 			const loginData = {
 				email: 'nonexistent@example.com',
-				password: 'password123'
+				password: 'password123',
 			};
 
-			await request(app)
-				.post('/api/auth/login')
-				.send(loginData)
-				.expect(401);
+			await request(app).post('/api/auth/login').send(loginData).expect(401);
 		});
 	});
 
@@ -174,17 +164,15 @@ describe('Authentication Routes', () => {
 				fullName: 'Test User',
 				email: 'test@example.com',
 				passwordHash,
-				role: 'student'
+				role: 'student',
 			});
 			await user.save();
 
 			// Login to get token
-			const loginResponse = await request(app)
-				.post('/api/auth/login')
-				.send({
-					email: 'test@example.com',
-					password: 'password123'
-				});
+			const loginResponse = await request(app).post('/api/auth/login').send({
+				email: 'test@example.com',
+				password: 'password123',
+			});
 
 			token = loginResponse.body.token;
 		});
@@ -201,9 +189,7 @@ describe('Authentication Routes', () => {
 		});
 
 		it('should reject request without token', async () => {
-			await request(app)
-				.get('/api/auth/profile')
-				.expect(401);
+			await request(app).get('/api/auth/profile').expect(401);
 		});
 
 		it('should reject request with invalid token', async () => {

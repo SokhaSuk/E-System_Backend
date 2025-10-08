@@ -27,23 +27,25 @@ const announcementSchema = new Schema<AnnouncementDocument>(
 	{
 		title: { type: String, required: true, trim: true },
 		content: { type: String, required: true },
-		type: { 
-			type: String, 
-			enum: ['general', 'course', 'academic', 'emergency'], 
+		type: {
+			type: String,
+			enum: ['general', 'course', 'academic', 'emergency'],
 			required: true,
-			default: 'general'
+			default: 'general',
 		},
 		author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-		targetAudience: [{ 
-			type: String, 
-			enum: ['admin', 'teacher', 'student', 'all'],
-			default: ['all']
-		}],
+		targetAudience: [
+			{
+				type: String,
+				enum: ['admin', 'teacher', 'student', 'all'],
+				default: ['all'],
+			},
+		],
 		course: { type: Schema.Types.ObjectId, ref: 'Course' },
 		isActive: { type: Boolean, default: true },
 		publishedAt: { type: Date, default: Date.now },
 		expiresAt: { type: Date },
-		attachments: [{ type: String }]
+		attachments: [{ type: String }],
 	},
 	{ timestamps: true }
 );
@@ -54,9 +56,12 @@ announcementSchema.index({ course: 1, isActive: 1, publishedAt: -1 });
 announcementSchema.index({ targetAudience: 1, isActive: 1, publishedAt: -1 });
 
 // Virtual for checking if announcement is expired
-announcementSchema.virtual('isExpired').get(function() {
+announcementSchema.virtual('isExpired').get(function () {
 	if (!this.expiresAt) return false;
 	return new Date() > this.expiresAt;
 });
 
-export const AnnouncementModel = mongoose.model<AnnouncementDocument>('Announcement', announcementSchema);
+export const AnnouncementModel = mongoose.model<AnnouncementDocument>(
+	'Announcement',
+	announcementSchema
+);

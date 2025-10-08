@@ -7,7 +7,17 @@ import { UserModel } from '../models/User';
 import { createError } from '../middleware/errorHandler';
 
 export async function listCourses(req: Request, res: Response) {
-	const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc', teacher, semester, academicYear, isActive, search } = req.query as any;
+	const {
+		page = 1,
+		limit = 10,
+		sortBy = 'createdAt',
+		sortOrder = 'desc',
+		teacher,
+		semester,
+		academicYear,
+		isActive,
+		search,
+	} = req.query as any;
 
 	const filter: any = {};
 	if (teacher) filter.teacher = teacher;
@@ -18,7 +28,7 @@ export async function listCourses(req: Request, res: Response) {
 		filter.$or = [
 			{ title: { $regex: search, $options: 'i' } },
 			{ description: { $regex: search, $options: 'i' } },
-			{ code: { $regex: search, $options: 'i' } }
+			{ code: { $regex: search, $options: 'i' } },
 		];
 	}
 
@@ -32,7 +42,7 @@ export async function listCourses(req: Request, res: Response) {
 			.sort(sort)
 			.skip(skip)
 			.limit(Number(limit)),
-		CourseModel.countDocuments(filter)
+		CourseModel.countDocuments(filter),
 	]);
 
 	return res.json({
@@ -41,8 +51,8 @@ export async function listCourses(req: Request, res: Response) {
 			page: Number(page),
 			limit: Number(limit),
 			total,
-			pages: Math.ceil(total / Number(limit))
-		}
+			pages: Math.ceil(total / Number(limit)),
+		},
 	});
 }
 
@@ -57,7 +67,8 @@ export async function getCourse(req: Request, res: Response) {
 }
 
 export async function createCourse(req: Request, res: Response) {
-	const { title, description, code, credits, semester, academicYear } = req.body;
+	const { title, description, code, credits, semester, academicYear } =
+		req.body;
 
 	const existingCourse = await CourseModel.findOne({ code });
 	if (existingCourse) {
@@ -71,7 +82,7 @@ export async function createCourse(req: Request, res: Response) {
 		credits,
 		teacher: req.user!._id,
 		semester,
-		academicYear
+		academicYear,
 	});
 
 	await course.save();
@@ -87,7 +98,10 @@ export async function updateCourse(req: Request, res: Response) {
 	}
 
 	// Only the course teacher or admin can update
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
 		throw createError('Not authorized to update this course', 403);
 	}
 
@@ -105,7 +119,10 @@ export async function enrollStudent(req: Request, res: Response) {
 		throw createError('Course not found', 404);
 	}
 
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
 		throw createError('Not authorized to enroll students in this course', 403);
 	}
 
@@ -131,11 +148,19 @@ export async function removeStudent(req: Request, res: Response) {
 		throw createError('Course not found', 404);
 	}
 
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
-		throw createError('Not authorized to remove students from this course', 403);
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
+		throw createError(
+			'Not authorized to remove students from this course',
+			403
+		);
 	}
 
-	course.students = course.students.filter(id => id.toString() !== req.params.studentId);
+	course.students = course.students.filter(
+		id => id.toString() !== req.params.studentId
+	);
 	await course.save();
 	await course.populate('students', 'fullName email');
 
@@ -149,5 +174,3 @@ export async function deleteCourse(req: Request, res: Response) {
 	}
 	return res.json({ message: 'Course deleted successfully' });
 }
-
-

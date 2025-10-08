@@ -16,10 +16,14 @@ export function getTokenExpirySeconds(): number {
 		const value = Number(match[1]);
 		const unit = match[2].toLowerCase();
 		switch (unit) {
-			case 's': return value;
-			case 'm': return value * 60;
-			case 'h': return value * 60 * 60;
-			case 'd': return value * 24 * 60 * 60;
+			case 's':
+				return value;
+			case 'm':
+				return value * 60;
+			case 'h':
+				return value * 60 * 60;
+			case 'd':
+				return value * 24 * 60 * 60;
 		}
 	}
 	return 7 * 24 * 60 * 60;
@@ -36,5 +40,3 @@ export function signAuthToken(payload: AuthTokenPayload): string {
 	const options: SignOptions = { expiresIn: getTokenExpirySeconds() };
 	return jwt.sign(payload as object, secret, options);
 }
-
-

@@ -28,9 +28,13 @@ const courseSchema = new Schema<CourseDocument>(
 		credits: { type: Number, required: true, min: 1, max: 6 },
 		teacher: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 		students: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-		semester: { type: String, required: true, enum: ['Fall', 'Spring', 'Summer'] },
+		semester: {
+			type: String,
+			required: true,
+			enum: ['Fall', 'Spring', 'Summer'],
+		},
 		academicYear: { type: String, required: true },
-		isActive: { type: Boolean, default: true }
+		isActive: { type: Boolean, default: true },
 	},
 	{ timestamps: true }
 );
@@ -39,4 +43,7 @@ const courseSchema = new Schema<CourseDocument>(
 courseSchema.index({ teacher: 1, isActive: 1 });
 courseSchema.index({ students: 1, isActive: 1 });
 
-export const CourseModel = mongoose.model<CourseDocument>('Course', courseSchema);
+export const CourseModel = mongoose.model<CourseDocument>(
+	'Course',
+	courseSchema
+);

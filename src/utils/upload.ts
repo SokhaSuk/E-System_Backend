@@ -4,7 +4,7 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { Request } from 'express';
+import { Request, Express } from 'express';
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -35,15 +35,19 @@ const storage = multer.diskStorage({
 	},
 	filename: (req: Request, file: Express.Multer.File, cb) => {
 		// Generate unique filename
-		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
 		const ext = path.extname(file.originalname);
 		const name = path.basename(file.originalname, ext);
 		cb(null, `${name}-${uniqueSuffix}${ext}`);
-	}
+	},
 });
 
 // File filter function
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (
+	req: Request,
+	file: Express.Multer.File,
+	cb: multer.FileFilterCallback
+) => {
 	// Allowed file types
 	const allowedTypes = [
 		'image/jpeg',
@@ -56,13 +60,17 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
 		'application/vnd.ms-excel',
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 		'text/plain',
-		'text/csv'
+		'text/csv',
 	];
 
 	if (allowedTypes.includes(file.mimetype)) {
 		cb(null, true);
 	} else {
-		cb(new Error('Invalid file type. Only images, PDFs, and Office documents are allowed.'));
+		cb(
+			new Error(
+				'Invalid file type. Only images, PDFs, and Office documents are allowed.'
+			)
+		);
 	}
 };
 
@@ -72,15 +80,16 @@ export const upload = multer({
 	fileFilter,
 	limits: {
 		fileSize: 10 * 1024 * 1024, // 10MB limit
-		files: 5 // Maximum 5 files per request
-	}
+		files: 5, // Maximum 5 files per request
+	},
 });
 
 // Single file upload
 export const uploadSingle = (fieldName: string) => upload.single(fieldName);
 
 // Multiple files upload
-export const uploadMultiple = (fieldName: string, maxCount: number = 5) => upload.array(fieldName, maxCount);
+export const uploadMultiple = (fieldName: string, maxCount: number = 5) =>
+	upload.array(fieldName, maxCount);
 
 // Specific upload configurations
 export const profileUpload = upload.single('profile');
@@ -91,7 +100,7 @@ export const courseUpload = upload.array('course', 10);
 // File deletion utility
 export const deleteFile = (filePath: string): Promise<void> => {
 	return new Promise((resolve, reject) => {
-		fs.unlink(filePath, (err) => {
+		fs.unlink(filePath, err => {
 			if (err) {
 				reject(err);
 			} else {
@@ -108,7 +117,10 @@ export const getFileUrl = (filePath: string): string => {
 };
 
 // Validate file size
-export const validateFileSize = (file: Express.Multer.File, maxSize: number = 10 * 1024 * 1024): boolean => {
+export const validateFileSize = (
+	file: Express.Multer.File,
+	maxSize: number = 10 * 1024 * 1024
+): boolean => {
 	return file.size <= maxSize;
 };
 
@@ -129,5 +141,9 @@ export const isPDF = (file: Express.Multer.File): boolean => {
 
 // Check if file is document
 export const isDocument = (file: Express.Multer.File): boolean => {
-	return file.mimetype.includes('word') || file.mimetype.includes('excel') || file.mimetype.includes('spreadsheet');
+	return (
+		file.mimetype.includes('word') ||
+		file.mimetype.includes('excel') ||
+		file.mimetype.includes('spreadsheet')
+	);
 };

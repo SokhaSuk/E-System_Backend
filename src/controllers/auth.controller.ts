@@ -2,36 +2,39 @@
  * Authentication controllers.
  */
 import { Request, Response } from 'express';
-import jwt, { Secret, SignOptions } from 'jsonwebtoken';
+// jsonwebtoken is used via signAuthToken service
 import { UserModel } from '../models/User';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { env } from '../config/env';
 import { signAuthToken } from '../services/auth.service';
 import { createError } from '../middleware/errorHandler';
 
-/** Converts env JWT_EXPIRES_IN to seconds (supports s/m/h/d) with 7d default. */
-function getExpiresInSeconds(): number {
-	const ttl = env.jwtExpiresIn;
-	if (!ttl) return 7 * 24 * 60 * 60;
-	const numeric = Number(ttl);
-	if (!Number.isNaN(numeric) && numeric > 0) return Math.floor(numeric);
-	const match = /^\s*(\d+)\s*([smhd])\s*$/i.exec(ttl);
-	if (match) {
-		const value = Number(match[1]);
-		const unit = match[2].toLowerCase();
-		switch (unit) {
-			case 's': return value;
-			case 'm': return value * 60;
-			case 'h': return value * 60 * 60;
-			case 'd': return value * 24 * 60 * 60;
-		}
-	}
-	return 7 * 24 * 60 * 60;
-}
+// getExpiresInSeconds is not used; keep future-ready version commented out to avoid lint errors
+// function getExpiresInSeconds(): number {
+// 	const ttl = env.jwtExpiresIn;
+// 	if (!ttl) return 7 * 24 * 60 * 60;
+// 	const numeric = Number(ttl);
+// 	if (!Number.isNaN(numeric) && numeric > 0) return Math.floor(numeric);
+// 	const match = /^\s*(\d+)\s*([smhd])\s*$/i.exec(ttl);
+// 	if (match) {
+// 		const value = Number(match[1]);
+// 		const unit = match[2].toLowerCase();
+// 		switch (unit) {
+// 			case 's': return value;
+// 			case 'm': return value * 60;
+// 			case 'h': return value * 60 * 60;
+// 			case 'd': return value * 24 * 60 * 60;
+// 		}
+// 	}
+// 	return 7 * 24 * 60 * 60;
+// }
 
 /** Signs a JWT for the given payload */
-function signToken(payload: { userId: string; role: 'admin' | 'teacher' | 'student' }) {
-    return signAuthToken(payload);
+function signToken(payload: {
+	userId: string;
+	role: 'admin' | 'teacher' | 'student';
+}) {
+	return signAuthToken(payload);
 }
 
 /** POST /api/auth/register */
@@ -49,7 +52,7 @@ export async function register(req: Request, res: Response) {
 		throw createError('Email already in use', 409);
 	}
 
-	let finalRole: 'admin' | 'teacher' | 'student' = role || 'student';
+	const finalRole: 'admin' | 'teacher' | 'student' = role || 'student';
 	if (finalRole === 'admin') {
 		// Require adminCode to be provided
 		if (!adminCode) {
@@ -65,7 +68,12 @@ export async function register(req: Request, res: Response) {
 	}
 
 	const passwordHash = await hashPassword(password);
-	const user = await UserModel.create({ fullName, email, passwordHash, role: finalRole });
+	const user = await UserModel.create({
+		fullName,
+		email,
+		passwordHash,
+		role: finalRole,
+	});
 
 	const token = signToken({ userId: user._id.toString(), role: user.role });
 	return res.status(201).json({
@@ -74,8 +82,8 @@ export async function register(req: Request, res: Response) {
 			_id: user._id.toString(),
 			fullName: user.fullName,
 			email: user.email,
-			role: user.role
-		}
+			role: user.role,
+		},
 	});
 }
 
@@ -100,8 +108,8 @@ export async function login(req: Request, res: Response) {
 			_id: user._id.toString(),
 			fullName: user.fullName,
 			email: user.email,
-			role: user.role
-		}
+			role: user.role,
+		},
 	});
 }
 
@@ -118,8 +126,6 @@ export async function profile(req: Request, res: Response) {
 		email: req.user.email,
 		role: req.user.role,
 		createdAt: req.user.createdAt,
-		updatedAt: req.user.updatedAt
+		updatedAt: req.user.updatedAt,
 	});
 }
-
-

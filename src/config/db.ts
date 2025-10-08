@@ -12,23 +12,22 @@ export async function connectToDatabase(): Promise<void> {
 		};
 
 		await mongoose.connect(env.mongoUri, options);
-		
+
 		console.log('✅ Successfully connected to MongoDB');
 		console.log(`📊 Database: ${env.mongoUri}`);
-		
+
 		// Handle connection events
-		mongoose.connection.on('error', (err) => {
+		mongoose.connection.on('error', err => {
 			console.error('❌ MongoDB connection error:', err);
 		});
-		
+
 		mongoose.connection.on('disconnected', () => {
 			console.warn('⚠️ MongoDB disconnected');
 		});
-		
+
 		mongoose.connection.on('reconnected', () => {
 			console.log('🔄 MongoDB reconnected');
 		});
-		
 	} catch (error) {
 		console.error('❌ Failed to connect to MongoDB:', error);
 		throw error;
@@ -45,7 +44,3 @@ export async function disconnectFromDatabase(): Promise<void> {
 		throw error;
 	}
 }
-
-
-
-

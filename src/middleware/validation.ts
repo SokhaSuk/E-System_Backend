@@ -32,7 +32,9 @@ export const validate = (schema: ValidationSchema) => {
 
 		// Validate params
 		if (schema.params) {
-			const { error } = schema.params.validate(req.params, { abortEarly: false });
+			const { error } = schema.params.validate(req.params, {
+				abortEarly: false,
+			});
 			if (error) {
 				errors.push(...error.details.map(detail => detail.message));
 			}
@@ -41,7 +43,7 @@ export const validate = (schema: ValidationSchema) => {
 		if (errors.length > 0) {
 			return res.status(400).json({
 				message: 'Validation failed',
-				errors
+				errors,
 			});
 		}
 
@@ -57,7 +59,9 @@ export const commonSchemas = {
 	pagination: {
 		page: Joi.number().integer().min(1).default(1),
 		limit: Joi.number().integer().min(1).max(100).default(10),
-		sortBy: Joi.string().valid('createdAt', 'updatedAt', 'title', 'name').default('createdAt'),
-		sortOrder: Joi.string().valid('asc', 'desc').default('desc')
-	}
+		sortBy: Joi.string()
+			.valid('createdAt', 'updatedAt', 'title', 'name')
+			.default('createdAt'),
+		sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
+	},
 };

@@ -24,16 +24,20 @@ const registerSchema = Joi.object({
 	email: Joi.string().email().required(),
 	password: Joi.string().min(6).required(),
 	role: Joi.string().valid('admin', 'teacher', 'student').optional(),
-	adminCode: Joi.string().optional()
+	adminCode: Joi.string().optional(),
 });
 
 const loginSchema = Joi.object({
 	email: Joi.string().email().required(),
-	password: Joi.string().min(6).required()
+	password: Joi.string().min(6).required(),
 });
 
 // Routes under /api/auth in server.ts
-router.post('/register', validate({ body: registerSchema }), asyncHandler(register));
+router.post(
+	'/register',
+	validate({ body: registerSchema }),
+	asyncHandler(register)
+);
 router.post('/login', validate({ body: loginSchema }), asyncHandler(login));
 router.get('/profile', authenticate, asyncHandler(profile));
 
@@ -44,5 +48,3 @@ router.get('/profile', authenticate, asyncHandler(profile));
 // Note: actual controller handlers are defined in controllers/auth.controller.ts
 
 export default router;
-
-

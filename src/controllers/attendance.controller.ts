@@ -8,14 +8,27 @@ import { UserModel } from '../models/User';
 import { createError } from '../middleware/errorHandler';
 
 export async function listAttendance(req: Request, res: Response) {
-	const { page = 1, limit = 10, sortBy = 'date', sortOrder = 'desc', student, course, date, startDate, endDate, status } = req.query as any;
+	const {
+		page = 1,
+		limit = 10,
+		sortBy = 'date',
+		sortOrder = 'desc',
+		student,
+		course,
+		date,
+		startDate,
+		endDate,
+		status,
+	} = req.query as any;
 
 	const filter: any = {};
 
 	if (req.user!.role === 'student') {
 		filter.student = req.user!._id;
 	} else if (req.user!.role === 'teacher') {
-		const teacherCourses = await CourseModel.find({ teacher: req.user!._id }).select('_id');
+		const teacherCourses = await CourseModel.find({
+			teacher: req.user!._id,
+		}).select('_id');
 		filter.course = { $in: teacherCourses.map(c => c._id) };
 	}
 
@@ -40,7 +53,7 @@ export async function listAttendance(req: Request, res: Response) {
 			.sort(sort)
 			.skip(skip)
 			.limit(Number(limit)),
-		AttendanceModel.countDocuments(filter)
+		AttendanceModel.countDocuments(filter),
 	]);
 
 	return res.json({
@@ -49,8 +62,8 @@ export async function listAttendance(req: Request, res: Response) {
 			page: Number(page),
 			limit: Number(limit),
 			total,
-			pages: Math.ceil(total / Number(limit))
-		}
+			pages: Math.ceil(total / Number(limit)),
+		},
 	});
 }
 
@@ -62,29 +75,51 @@ export async function getAttendance(req: Request, res: Response) {
 	if (!record) {
 		throw createError('Attendance record not found', 404);
 	}
-	if (req.user!.role === 'student' && record.student.toString() !== req.user!._id.toString()) {
+	if (
+		req.user!.role === 'student' &&
+		record.student.toString() !== req.user!._id.toString()
+	) {
 		throw createError('Not authorized to view this attendance record', 403);
 	}
 	return res.json(record);
 }
 
 export async function recordAttendance(req: Request, res: Response) {
-	const { studentId, courseId, date, status, notes } = req.body as { studentId: string; courseId: string; date: string; status: string; notes?: string };
+	const { studentId, courseId, date, status, notes } = req.body as {
+		studentId: string;
+		courseId: string;
+		date: string;
+		status: string;
+		notes?: string;
+	};
 
 	const course = await CourseModel.findById(courseId);
 	if (!course) {
 		throw createError('Course not found', 404);
 	}
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
-		throw createError('Not authorized to record attendance for this course', 403);
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
+		throw createError(
+			'Not authorized to record attendance for this course',
+			403
+		);
 	}
 	if (!course.students.map(id => id.toString()).includes(studentId)) {
 		throw createError('Student is not enrolled in this course', 400);
 	}
 
-	const existingAttendance = await AttendanceModel.findOne({ student: studentId, course: courseId, date: new Date(date) });
+	const existingAttendance = await AttendanceModel.findOne({
+		student: studentId,
+		course: courseId,
+		date: new Date(date),
+	});
 	if (existingAttendance) {
-		throw createError('Attendance already recorded for this student on this date', 409);
+		throw createError(
+			'Attendance already recorded for this student on this date',
+			409
+		);
 	}
 
 	const record = new AttendanceModel({
@@ -93,7 +128,7 @@ export async function recordAttendance(req: Request, res: Response) {
 		date: new Date(date),
 		status,
 		notes,
-		recordedBy: req.user!._id
+		recordedBy: req.user!._id,
 	});
 	await record.save();
 	await record.populate(['student', 'course', 'recordedBy']);
@@ -107,15 +142,26 @@ export async function recordBulkAttendance(req: Request, res: Response) {
 	if (!course) {
 		throw createError('Course not found', 404);
 	}
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
-		throw createError('Not authorized to record attendance for this course', 403);
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
+		throw createError(
+			'Not authorized to record attendance for this course',
+			403
+		);
 	}
 
 	const studentIds = attendanceData.map((a: any) => a.studentId);
 	const enrolledStudents = course.students.map(id => id.toString());
-	const invalidStudents = studentIds.filter((id: string) => !enrolledStudents.includes(id));
+	const invalidStudents = studentIds.filter(
+		(id: string) => !enrolledStudents.includes(id)
+	);
 	if (invalidStudents.length > 0) {
-		return res.status(400).json({ message: 'Some students are not enrolled in this course', invalidStudents });
+		return res.status(400).json({
+			message: 'Some students are not enrolled in this course',
+			invalidStudents,
+		});
 	}
 
 	await AttendanceModel.deleteMany({ course: courseId, date: new Date(date) });
@@ -126,17 +172,20 @@ export async function recordBulkAttendance(req: Request, res: Response) {
 		date: new Date(date),
 		status: a.status,
 		notes: a.notes,
-		recordedBy: req.user!._id
+		recordedBy: req.user!._id,
 	}));
 
 	const savedAttendance = await AttendanceModel.insertMany(attendanceRecords);
 	await AttendanceModel.populate(savedAttendance, [
 		{ path: 'student', select: 'fullName email' },
 		{ path: 'course', select: 'title code' },
-		{ path: 'recordedBy', select: 'fullName' }
+		{ path: 'recordedBy', select: 'fullName' },
 	]);
 
-	return res.status(201).json({ message: 'Bulk attendance recorded successfully', attendance: savedAttendance });
+	return res.status(201).json({
+		message: 'Bulk attendance recorded successfully',
+		attendance: savedAttendance,
+	});
 }
 
 export async function updateAttendance(req: Request, res: Response) {
@@ -148,7 +197,10 @@ export async function updateAttendance(req: Request, res: Response) {
 	if (!course) {
 		throw createError('Course not found', 404);
 	}
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
 		throw createError('Not authorized to update this attendance record', 403);
 	}
 	Object.assign(attendance, req.body);
@@ -166,7 +218,10 @@ export async function deleteAttendance(req: Request, res: Response) {
 	if (!course) {
 		throw createError('Course not found', 404);
 	}
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
 		throw createError('Not authorized to delete this attendance record', 403);
 	}
 	await AttendanceModel.findByIdAndDelete(req.params.id);
@@ -181,7 +236,10 @@ export async function attendanceStats(req: Request, res: Response) {
 	if (!course) {
 		throw createError('Course not found', 404);
 	}
-	if (req.user!.role !== 'admin' && course.teacher.toString() !== req.user!._id.toString()) {
+	if (
+		req.user!.role !== 'admin' &&
+		course.teacher.toString() !== req.user!._id.toString()
+	) {
 		throw createError('Not authorized to view statistics for this course', 403);
 	}
 
@@ -194,18 +252,39 @@ export async function attendanceStats(req: Request, res: Response) {
 
 	const stats = await AttendanceModel.aggregate([
 		{ $match: filter },
-		{ $group: { _id: { student: '$student', status: '$status' }, count: { $sum: 1 } } },
-		{ $group: { _id: '$_id.student', attendance: { $push: { status: '$_id.status', count: '$count' } }, totalRecords: { $sum: '$count' } } }
+		{
+			$group: {
+				_id: { student: '$student', status: '$status' },
+				count: { $sum: 1 },
+			},
+		},
+		{
+			$group: {
+				_id: '$_id.student',
+				attendance: { $push: { status: '$_id.status', count: '$count' } },
+				totalRecords: { $sum: '$count' },
+			},
+		},
 	]);
 
 	const studentIds = stats.map(s => s._id);
-	const students = await UserModel.find({ _id: { $in: studentIds } }).select('fullName email');
+	const students = await UserModel.find({ _id: { $in: studentIds } }).select(
+		'fullName email'
+	);
 	const statsWithStudents = stats.map(stat => {
-		const student = students.find(s => s._id.toString() === stat._id.toString());
-		return { student: { _id: stat._id, fullName: student?.fullName, email: student?.email }, attendance: stat.attendance, totalRecords: stat.totalRecords };
+		const student = students.find(
+			s => s._id.toString() === stat._id.toString()
+		);
+		return {
+			student: {
+				_id: stat._id,
+				fullName: student?.fullName,
+				email: student?.email,
+			},
+			attendance: stat.attendance,
+			totalRecords: stat.totalRecords,
+		};
 	});
 
 	return res.json(statsWithStudents);
 }
-
-

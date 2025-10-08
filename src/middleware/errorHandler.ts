@@ -10,7 +10,11 @@ export interface AppError extends Error {
 	code?: string;
 }
 
-export const createError = (message: string, statusCode: number = 500, isOperational: boolean = true): AppError => {
+export const createError = (
+	message: string,
+	statusCode: number = 500,
+	isOperational: boolean = true
+): AppError => {
 	const error = new Error(message) as AppError;
 	error.statusCode = statusCode;
 	error.isOperational = isOperational;
@@ -21,7 +25,7 @@ export const errorHandler = (
 	err: AppError,
 	req: Request,
 	res: Response,
-	next: NextFunction
+	_next: NextFunction
 ) => {
 	let { statusCode = 500, message } = err;
 
@@ -31,16 +35,16 @@ export const errorHandler = (
 		message = 'Validation Error';
 	}
 
-    // Handle Mongo/Mongoose duplicate key errors
-    // Driver may set code as number 11000; Mongoose may wrap it differently
-    const anyErr: any = err as any;
-    if (anyErr && (anyErr.code === 11000 || anyErr.code === '11000')) {
-        statusCode = 409;
-        // Attempt to extract field name(s)
-        const fields = anyErr.keyValue ? Object.keys(anyErr.keyValue) : [];
-        const fieldList = fields.length ? ` (${fields.join(', ')})` : '';
-        message = `Duplicate value${fieldList}`;
-    }
+	// Handle Mongo/Mongoose duplicate key errors
+	// Driver may set code as number 11000; Mongoose may wrap it differently
+	const anyErr: any = err as any;
+	if (anyErr && (anyErr.code === 11000 || anyErr.code === '11000')) {
+		statusCode = 409;
+		// Attempt to extract field name(s)
+		const fields = anyErr.keyValue ? Object.keys(anyErr.keyValue) : [];
+		const fieldList = fields.length ? ` (${fields.join(', ')})` : '';
+		message = `Duplicate value${fieldList}`;
+	}
 
 	// Handle Mongoose cast errors
 	if (err.name === 'CastError') {
@@ -60,9 +64,11 @@ export const errorHandler = (
 	}
 
 	// Log error in development (but skip common browser requests and 404s)
-	if (env.nodeEnv === 'development' && 
-		!req.url.includes('favicon.ico') && 
-		statusCode !== 404) {
+	if (
+		env.nodeEnv === 'development' &&
+		!req.url.includes('favicon.ico') &&
+		statusCode !== 404
+	) {
 		console.error('Error:', {
 			message: err.message,
 			stack: err.stack,
@@ -70,7 +76,7 @@ export const errorHandler = (
 			url: req.url,
 			method: req.method,
 			ip: req.ip,
-			userAgent: req.get('User-Agent')
+			userAgent: req.get('User-Agent'),
 		});
 	}
 
@@ -78,11 +84,15 @@ export const errorHandler = (
 	res.status(statusCode).json({
 		message,
 		...(env.nodeEnv === 'development' && { stack: err.stack }),
-		...(env.nodeEnv === 'development' && { error: err })
+		...(env.nodeEnv === 'development' && { error: err }),
 	});
 };
 
-export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
+export const notFoundHandler = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	const error = createError(`Route ${req.originalUrl} not found`, 404);
 	next(error);
 };

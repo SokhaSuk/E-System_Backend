@@ -7,22 +7,30 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": ["./tsconfig.json"],
+    "project": ["./tsconfig.eslint.json"],
     "sourceType": "module",
     "ecmaVersion": 2021
   },
   "plugins": ["@typescript-eslint"],
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
   ],
   "rules": {
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "no-console": "off"
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/ban-types": [
+      "warn",
+      { "extendDefaults": true, "types": { "Function": false } }
+    ],
+    "no-console": "off",
+    "prettier/prettier": "warn"
   },
-  "ignorePatterns": ["dist/**"]
+  "ignorePatterns": ["dist/**", "node_modules/**", "coverage/**"]
 }
 
 

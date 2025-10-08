@@ -8,7 +8,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4000
-      - MONGO_URI=mongodb://mongo:27017/e_system
+      - MONGO_URI=mongodb://sokhasuk2004_db_userrBWEgExq76ZPGQ23@mongo:27017/e_system?authSource=e_system
       - JWT_SECRET=your-super-secret-jwt-key
       - JWT_EXPIRES_IN=7d
       - ADMIN_SIGNUP_CODE=admin123
@@ -32,8 +32,11 @@ services:
       - "27017:27017"
     environment:
       - MONGO_INITDB_DATABASE=e_system
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
     volumes:
       - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     restart: unless-stopped
 
   mongo-express:
@@ -43,8 +46,9 @@ services:
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo
       - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpassword
       - ME_CONFIG_BASICAUTH_USERNAME=admin
       - ME_CONFIG_BASICAUTH_PASSWORD=admin123
     depends_on:

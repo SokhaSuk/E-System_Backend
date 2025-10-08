@@ -31,8 +31,8 @@ const createTransporter = () => {
 		secure: env.smtp.secure,
 		auth: {
 			user: env.smtp.user,
-			pass: env.smtp.password
-		}
+			pass: env.smtp.password,
+		},
 	});
 };
 
@@ -40,14 +40,14 @@ const createTransporter = () => {
 export const sendEmail = async (emailData: EmailData): Promise<void> => {
 	try {
 		const transporter = createTransporter();
-		
+
 		const mailOptions = {
 			from: `"E-System" <${env.smtp.user}>`,
 			to: Array.isArray(emailData.to) ? emailData.to.join(', ') : emailData.to,
 			subject: emailData.subject,
 			html: emailData.html,
 			text: emailData.text || emailData.html.replace(/<[^>]*>/g, ''),
-			attachments: emailData.attachments
+			attachments: emailData.attachments,
 		};
 
 		await transporter.sendMail(mailOptions);
@@ -61,7 +61,11 @@ export const sendEmail = async (emailData: EmailData): Promise<void> => {
 // Email templates
 export const emailTemplates = {
 	// Welcome email
-	welcome: (userName: string, userEmail: string, role: string): EmailTemplate => ({
+	welcome: (
+		userName: string,
+		userEmail: string,
+		role: string
+	): EmailTemplate => ({
 		subject: 'Welcome to E-System',
 		html: `
 			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -74,7 +78,7 @@ export const emailTemplates = {
 				<p>Best regards,<br>E-System Team</p>
 			</div>
 		`,
-		text: `Welcome to E-System! Hello ${userName}, Welcome to our educational management system. Your account has been successfully created with the role of ${role}.`
+		text: `Welcome to E-System! Hello ${userName}, Welcome to our educational management system. Your account has been successfully created with the role of ${role}.`,
 	}),
 
 	// Password reset
@@ -92,11 +96,15 @@ export const emailTemplates = {
 				<p>Best regards,<br>E-System Team</p>
 			</div>
 		`,
-		text: `Password Reset Request. Hello ${userName}, You have requested to reset your password. Please visit ${env.frontendUrl}/reset-password?token=${resetToken} to reset your password.`
+		text: `Password Reset Request. Hello ${userName}, You have requested to reset your password. Please visit ${env.frontendUrl}/reset-password?token=${resetToken} to reset your password.`,
 	}),
 
 	// Course enrollment
-	courseEnrollment: (userName: string, courseTitle: string, courseCode: string): EmailTemplate => ({
+	courseEnrollment: (
+		userName: string,
+		courseTitle: string,
+		courseCode: string
+	): EmailTemplate => ({
 		subject: 'Course Enrollment Confirmation',
 		html: `
 			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -112,11 +120,17 @@ export const emailTemplates = {
 				<p>Best regards,<br>E-System Team</p>
 			</div>
 		`,
-		text: `Course Enrollment Confirmation. Hello ${userName}, You have been successfully enrolled in ${courseTitle} (${courseCode}).`
+		text: `Course Enrollment Confirmation. Hello ${userName}, You have been successfully enrolled in ${courseTitle} (${courseCode}).`,
 	}),
 
 	// Grade notification
-	gradeNotification: (userName: string, courseTitle: string, gradeType: string, score: number, maxScore: number): EmailTemplate => ({
+	gradeNotification: (
+		userName: string,
+		courseTitle: string,
+		gradeType: string,
+		score: number,
+		maxScore: number
+	): EmailTemplate => ({
 		subject: 'New Grade Posted',
 		html: `
 			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -134,11 +148,15 @@ export const emailTemplates = {
 				<p>Best regards,<br>E-System Team</p>
 			</div>
 		`,
-		text: `New Grade Posted. Hello ${userName}, A new grade has been posted for ${courseTitle}. Assessment: ${gradeType}, Score: ${score}/${maxScore}.`
+		text: `New Grade Posted. Hello ${userName}, A new grade has been posted for ${courseTitle}. Assessment: ${gradeType}, Score: ${score}/${maxScore}.`,
 	}),
 
 	// Announcement notification
-	announcementNotification: (userName: string, announcementTitle: string, announcementContent: string): EmailTemplate => ({
+	announcementNotification: (
+		userName: string,
+		announcementTitle: string,
+		announcementContent: string
+	): EmailTemplate => ({
 		subject: 'New Announcement',
 		html: `
 			<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -154,61 +172,100 @@ export const emailTemplates = {
 				<p>Best regards,<br>E-System Team</p>
 			</div>
 		`,
-		text: `New Announcement. Hello ${userName}, A new announcement has been posted: ${announcementTitle}. ${announcementContent}`
-	})
+		text: `New Announcement. Hello ${userName}, A new announcement has been posted: ${announcementTitle}. ${announcementContent}`,
+	}),
 };
 
 // Send welcome email
-export const sendWelcomeEmail = async (userEmail: string, userName: string, role: string): Promise<void> => {
+export const sendWelcomeEmail = async (
+	userEmail: string,
+	userName: string,
+	role: string
+): Promise<void> => {
 	const template = emailTemplates.welcome(userName, userEmail, role);
 	await sendEmail({
 		to: userEmail,
 		subject: template.subject,
 		html: template.html,
-		text: template.text
+		text: template.text,
 	});
 };
 
 // Send password reset email
-export const sendPasswordResetEmail = async (userEmail: string, userName: string, resetToken: string): Promise<void> => {
+export const sendPasswordResetEmail = async (
+	userEmail: string,
+	userName: string,
+	resetToken: string
+): Promise<void> => {
 	const template = emailTemplates.passwordReset(userName, resetToken);
 	await sendEmail({
 		to: userEmail,
 		subject: template.subject,
 		html: template.html,
-		text: template.text
+		text: template.text,
 	});
 };
 
 // Send course enrollment email
-export const sendCourseEnrollmentEmail = async (userEmail: string, userName: string, courseTitle: string, courseCode: string): Promise<void> => {
-	const template = emailTemplates.courseEnrollment(userName, courseTitle, courseCode);
+export const sendCourseEnrollmentEmail = async (
+	userEmail: string,
+	userName: string,
+	courseTitle: string,
+	courseCode: string
+): Promise<void> => {
+	const template = emailTemplates.courseEnrollment(
+		userName,
+		courseTitle,
+		courseCode
+	);
 	await sendEmail({
 		to: userEmail,
 		subject: template.subject,
 		html: template.html,
-		text: template.text
+		text: template.text,
 	});
 };
 
 // Send grade notification email
-export const sendGradeNotificationEmail = async (userEmail: string, userName: string, courseTitle: string, gradeType: string, score: number, maxScore: number): Promise<void> => {
-	const template = emailTemplates.gradeNotification(userName, courseTitle, gradeType, score, maxScore);
+export const sendGradeNotificationEmail = async (
+	userEmail: string,
+	userName: string,
+	courseTitle: string,
+	gradeType: string,
+	score: number,
+	maxScore: number
+): Promise<void> => {
+	const template = emailTemplates.gradeNotification(
+		userName,
+		courseTitle,
+		gradeType,
+		score,
+		maxScore
+	);
 	await sendEmail({
 		to: userEmail,
 		subject: template.subject,
 		html: template.html,
-		text: template.text
+		text: template.text,
 	});
 };
 
 // Send announcement notification email
-export const sendAnnouncementNotificationEmail = async (userEmails: string[], userName: string, announcementTitle: string, announcementContent: string): Promise<void> => {
-	const template = emailTemplates.announcementNotification(userName, announcementTitle, announcementContent);
+export const sendAnnouncementNotificationEmail = async (
+	userEmails: string[],
+	userName: string,
+	announcementTitle: string,
+	announcementContent: string
+): Promise<void> => {
+	const template = emailTemplates.announcementNotification(
+		userName,
+		announcementTitle,
+		announcementContent
+	);
 	await sendEmail({
 		to: userEmails,
 		subject: template.subject,
 		html: template.html,
-		text: template.text
+		text: template.text,
 	});
 };

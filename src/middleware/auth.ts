@@ -32,7 +32,9 @@ declare global {
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
 	const authHeader = req.headers.authorization;
 	if (!authHeader || !authHeader.startsWith('Bearer ')) {
-		return res.status(401).json({ message: 'Missing or invalid Authorization header' });
+		return res
+			.status(401)
+			.json({ message: 'Missing or invalid Authorization header' });
 	}
 	const token = authHeader.split(' ')[1];
 	try {
@@ -65,22 +67,28 @@ export function requireRoles(...roles: Array<AuthPayload['role']>) {
  * Validates JWT token and attaches user to request.
  * Alias for requireAuth with user population.
  */
-export async function authenticate(req: Request, res: Response, next: NextFunction) {
+export async function authenticate(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
 	const authHeader = req.headers.authorization;
 	if (!authHeader || !authHeader.startsWith('Bearer ')) {
-		return res.status(401).json({ message: 'Missing or invalid Authorization header' });
+		return res
+			.status(401)
+			.json({ message: 'Missing or invalid Authorization header' });
 	}
 	const token = authHeader.split(' ')[1];
 	try {
 		const payload = jwt.verify(token, env.jwtSecret) as AuthPayload;
 		req.auth = payload;
-		
+
 		// Fetch user from database
 		const user = await UserModel.findById(payload.userId);
 		if (!user) {
 			return res.status(401).json({ message: 'User not found' });
 		}
-		
+
 		req.user = user;
 		return next();
 	} catch {
@@ -103,5 +111,3 @@ export function authorize(roles: Array<AuthPayload['role']>) {
 		return next();
 	};
 }
-
-
