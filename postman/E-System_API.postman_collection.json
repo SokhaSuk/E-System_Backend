@@ -1,0 +1,226 @@
+{
+  "info": {
+    "_postman_id": "e-system-api-collection",
+    "name": "E-System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Misc",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{rootUrl}}/health", "host": ["{{rootUrl}}"], "path": ["health"] }
+          }
+        },
+        {
+          "name": "Test",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{rootUrl}}/test", "host": ["{{rootUrl}}"], "path": ["test"] }
+          }
+        },
+        {
+          "name": "API Root",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""] }
+          }
+        },
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "url": { "raw": "{{rootUrl}}/api-docs", "host": ["{{rootUrl}}"], "path": ["api-docs"] }
+          }
+        },
+        {
+          "name": "OpenAPI JSON",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "noauth" },
+            "url": { "raw": "{{rootUrl}}/openapi.json", "host": ["{{rootUrl}}"], "path": ["openapi.json"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"student\",\n  \"adminCode\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth","register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  try { var json = pm.response.json(); if (json.token) { pm.environment.set('token', json.token); } } catch (e) {}",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profile (me)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth","profile"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        { "name": "Stats", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/stats", "host": ["{{baseUrl}}"], "path": ["admin","stats"] } } },
+        { "name": "List Users", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/users?page=1&limit=10&sortBy=createdAt&sortOrder=desc&role=&search=", "host": ["{{baseUrl}}"], "path": ["admin","users"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"role","value":""},{"key":"search","value":""} ] } } },
+        { "name": "Create User", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"fullName\": \"New User\",\n  \"email\": \"new@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"student\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/admin/users", "host": ["{{baseUrl}}"], "path": ["admin","users"] } } },
+        { "name": "Update User", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"fullName\": \"Updated Name\",\n  \"email\": \"updated@example.com\",\n  \"role\": \"teacher\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/admin/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["admin","users","{{userId}}"] } } },
+        { "name": "Delete User", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["admin","users","{{userId}}"] } } },
+        { "name": "List Courses (overview)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/courses?page=1&limit=10&sortBy=createdAt&sortOrder=desc&teacher=&semester=&academicYear=&isActive=&search=", "host": ["{{baseUrl}}"], "path": ["admin","courses"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"teacher","value":""},{"key":"semester","value":""},{"key":"academicYear","value":""},{"key":"isActive","value":""},{"key":"search","value":""} ] } } },
+        { "name": "List Grades (overview)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/grades?page=1&limit=10&sortBy=createdAt&sortOrder=desc&student=&course=&gradeType=&search=", "host": ["{{baseUrl}}"], "path": ["admin","grades"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"student","value":""},{"key":"course","value":""},{"key":"gradeType","value":""},{"key":"search","value":""} ] } } },
+        { "name": "List Attendance (overview)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/attendance?page=1&limit=10&sortBy=date&sortOrder=desc&student=&course=&date=&startDate=&endDate=&status=", "host": ["{{baseUrl}}"], "path": ["admin","attendance"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"date"},{"key":"sortOrder","value":"desc"},{"key":"student","value":""},{"key":"course","value":""},{"key":"date","value":""},{"key":"startDate","value":""},{"key":"endDate","value":""},{"key":"status","value":""} ] } } },
+        { "name": "List Announcements (overview)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/announcements?page=1&limit=10&sortBy=publishedAt&sortOrder=desc&type=&course=&author=&targetAudience=&isActive=&search=", "host": ["{{baseUrl}}"], "path": ["admin","announcements"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"publishedAt"},{"key":"sortOrder","value":"desc"},{"key":"type","value":""},{"key":"course","value":""},{"key":"author","value":""},{"key":"targetAudience","value":""},{"key":"isActive","value":""},{"key":"search","value":""} ] } } }
+      ]
+    },
+    {
+      "name": "Teacher",
+      "item": [
+        { "name": "Dashboard", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/dashboard", "host": ["{{baseUrl}}"], "path": ["teacher","dashboard"] } } },
+        { "name": "My Courses", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/courses?page=1&limit=10&sortBy=createdAt&sortOrder=desc&semester=&academicYear=&isActive=&search=", "host": ["{{baseUrl}}"], "path": ["teacher","courses"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"semester","value":""},{"key":"academicYear","value":""},{"key":"isActive","value":""},{"key":"search","value":""} ] } } },
+        { "name": "Course Details", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/courses/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["teacher","courses","{{courseId}}"] } } },
+        { "name": "Course Students", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/courses/{{courseId}}/students?page=1&limit=10&sortBy=fullName&sortOrder=asc&search=", "host": ["{{baseUrl}}"], "path": ["teacher","courses","{{courseId}}","students"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"fullName"},{"key":"sortOrder","value":"asc"},{"key":"search","value":""} ] } } },
+        { "name": "Student Progress", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/courses/{{courseId}}/students/{{studentId}}/progress", "host": ["{{baseUrl}}"], "path": ["teacher","courses","{{courseId}}","students","{{studentId}}","progress"] } } },
+        { "name": "Course Stats", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/courses/{{courseId}}/stats?startDate=&endDate=", "host": ["{{baseUrl}}"], "path": ["teacher","courses","{{courseId}}","stats"], "query": [ {"key":"startDate","value":""},{"key":"endDate","value":""} ] } } },
+        { "name": "Course Grades", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/courses/{{courseId}}/grades?page=1&limit=10&sortBy=createdAt&sortOrder=desc&student=&gradeType=&search=", "host": ["{{baseUrl}}"], "path": ["teacher","courses","{{courseId}}","grades"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"student","value":""},{"key":"gradeType","value":""},{"key":"search","value":""} ] } } },
+        { "name": "Course Attendance", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/courses/{{courseId}}/attendance?page=1&limit=10&sortBy=date&sortOrder=desc&student=&date=&startDate=&endDate=&status=", "host": ["{{baseUrl}}"], "path": ["teacher","courses","{{courseId}}","attendance"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"date"},{"key":"sortOrder","value":"desc"},{"key":"student","value":""},{"key":"date","value":""},{"key":"startDate","value":""},{"key":"endDate","value":""},{"key":"status","value":""} ] } } }
+      ]
+    },
+    {
+      "name": "Student",
+      "item": [
+        { "name": "Me", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/me", "host": ["{{baseUrl}}"], "path": ["student","me"] } } },
+        { "name": "Dashboard", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/dashboard", "host": ["{{baseUrl}}"], "path": ["student","dashboard"] } } },
+        { "name": "My Courses", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/courses?page=1&limit=10&semester=&academicYear=", "host": ["{{baseUrl}}"], "path": ["student","courses"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"semester","value":""},{"key":"academicYear","value":""} ] } } },
+        { "name": "Course Details", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/courses/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["student","courses","{{courseId}}"] } } },
+        { "name": "My Grades", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/grades?page=1&limit=10&courseId=&gradeType=&semester=", "host": ["{{baseUrl}}"], "path": ["student","grades"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"courseId","value":""},{"key":"gradeType","value":""},{"key":"semester","value":""} ] } } },
+        { "name": "My Attendance", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/attendance?page=1&limit=10&courseId=&startDate=&endDate=&status=", "host": ["{{baseUrl}}"], "path": ["student","attendance"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"courseId","value":""},{"key":"startDate","value":""},{"key":"endDate","value":""},{"key":"status","value":""} ] } } },
+        { "name": "Transcript", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/transcript?semester=&academicYear=", "host": ["{{baseUrl}}"], "path": ["student","transcript"], "query": [ {"key":"semester","value":""},{"key":"academicYear","value":""} ] } } },
+        { "name": "Announcements", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/student/announcements?page=1&limit=10&type=&courseId=", "host": ["{{baseUrl}}"], "path": ["student","announcements"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"type","value":""},{"key":"courseId","value":""} ] } } }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        { "name": "List Courses", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/courses?page=1&limit=10&sortBy=createdAt&sortOrder=desc&teacher=&semester=&academicYear=&isActive=&search=", "host": ["{{baseUrl}}"], "path": ["courses"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"teacher","value":""},{"key":"semester","value":""},{"key":"academicYear","value":""},{"key":"isActive","value":""},{"key":"search","value":""} ] } } },
+        { "name": "Get Course", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/courses/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["courses","{{courseId}}"] } } },
+        { "name": "Create Course", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"title\": \"Intro to Math\",\n  \"description\": \"Basic algebra and geometry\",\n  \"code\": \"MTH101\",\n  \"credits\": 3,\n  \"semester\": \"Fall\",\n  \"academicYear\": \"2025\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/courses", "host": ["{{baseUrl}}"], "path": ["courses"] } } },
+        { "name": "Update Course", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"title\": \"Intro to Math II\",\n  \"description\": \"Updated description\",\n  \"code\": \"MTH102\",\n  \"credits\": 4,\n  \"semester\": \"Spring\",\n  \"academicYear\": \"2026\",\n  \"isActive\": true\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/courses/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["courses","{{courseId}}"] } } },
+        { "name": "Delete Course", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/courses/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["courses","{{courseId}}"] } } },
+        { "name": "Enroll Student", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"studentId\": \"{{studentId}}\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/courses/{{courseId}}/enroll", "host": ["{{baseUrl}}"], "path": ["courses","{{courseId}}","enroll"] } } },
+        { "name": "Remove Student", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/courses/{{courseId}}/enroll/{{studentId}}", "host": ["{{baseUrl}}"], "path": ["courses","{{courseId}}","enroll","{{studentId}}"] } } }
+      ]
+    },
+    {
+      "name": "Grades",
+      "item": [
+        { "name": "List Grades", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/grades?page=1&limit=10&sortBy=createdAt&sortOrder=desc&student=&course=&gradeType=&search=", "host": ["{{baseUrl}}"], "path": ["grades"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"student","value":""},{"key":"course","value":""},{"key":"gradeType","value":""},{"key":"search","value":""} ] } } },
+        { "name": "Get Grade", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/grades/{{gradeId}}", "host": ["{{baseUrl}}"], "path": ["grades","{{gradeId}}"] } } },
+        { "name": "Create Grade", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"courseId\": \"{{courseId}}\",\n  \"gradeType\": \"assignment\",\n  \"title\": \"Homework 1\",\n  \"score\": 85,\n  \"maxScore\": 100,\n  \"comments\": \"Good job\",\n  \"submittedAt\": \"2025-10-01\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/grades", "host": ["{{baseUrl}}"], "path": ["grades"] } } },
+        { "name": "Update Grade", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"title\": \"Homework 1 - Revised\",\n  \"score\": 90,\n  \"maxScore\": 100,\n  \"comments\": \"Regraded\",\n  \"gradeType\": \"exam\",\n  \"submittedAt\": \"2025-10-02\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/grades/{{gradeId}}", "host": ["{{baseUrl}}"], "path": ["grades","{{gradeId}}"] } } },
+        { "name": "Delete Grade", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/grades/{{gradeId}}", "host": ["{{baseUrl}}"], "path": ["grades","{{gradeId}}"] } } },
+        { "name": "Grades by Student", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/grades/student/{{studentId}}", "host": ["{{baseUrl}}"], "path": ["grades","student","{{studentId}}"] } } },
+        { "name": "Student GPA", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/grades/student/{{studentId}}/gpa", "host": ["{{baseUrl}}"], "path": ["grades","student","{{studentId}}","gpa"] } } },
+        { "name": "Grades by Course", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/grades/course/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["grades","course","{{courseId}}"] } } }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        { "name": "List Attendance", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/attendance?page=1&limit=10&sortBy=date&sortOrder=desc&student=&course=&date=&startDate=&endDate=&status=", "host": ["{{baseUrl}}"], "path": ["attendance"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"date"},{"key":"sortOrder","value":"desc"},{"key":"student","value":""},{"key":"course","value":""},{"key":"date","value":""},{"key":"startDate","value":""},{"key":"endDate","value":""},{"key":"status","value":""} ] } } },
+        { "name": "Get Attendance", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/attendance/{{attendanceId}}", "host": ["{{baseUrl}}"], "path": ["attendance","{{attendanceId}}"] } } },
+        { "name": "Record Attendance", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"courseId\": \"{{courseId}}\",\n  \"date\": \"2025-10-05\",\n  \"status\": \"present\",\n  \"notes\": \"On time\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/attendance", "host": ["{{baseUrl}}"], "path": ["attendance"] } } },
+        { "name": "Record Bulk Attendance", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"courseId\": \"{{courseId}}\",\n  \"date\": \"2025-10-05\",\n  \"attendance\": [\n    { \"studentId\": \"{{studentId}}\", \"status\": \"present\", \"notes\": \"\" },\n    { \"studentId\": \"{{studentId}}\", \"status\": \"absent\", \"notes\": \"Sick\" }\n  ]\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/attendance/bulk", "host": ["{{baseUrl}}"], "path": ["attendance","bulk"] } } },
+        { "name": "Update Attendance", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"status\": \"late\",\n  \"notes\": \"Traffic\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/attendance/{{attendanceId}}", "host": ["{{baseUrl}}"], "path": ["attendance","{{attendanceId}}"] } } },
+        { "name": "Delete Attendance", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/attendance/{{attendanceId}}", "host": ["{{baseUrl}}"], "path": ["attendance","{{attendanceId}}"] } } },
+        { "name": "Course Attendance Stats", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/attendance/stats/{{courseId}}?startDate=&endDate=", "host": ["{{baseUrl}}"], "path": ["attendance","stats","{{courseId}}"], "query": [ {"key":"startDate","value":""},{"key":"endDate","value":""} ] } } }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "List Users", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/users?page=1&limit=10&sortBy=createdAt&sortOrder=desc&role=&search=", "host": ["{{baseUrl}}"], "path": ["users"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"role","value":""},{"key":"search","value":""} ] } } },
+        { "name": "Create User", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"fullName\": \"User Name\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"student\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] } } },
+        { "name": "Get User", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users","{{userId}}"] } } },
+        { "name": "Update User", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"fullName\": \"New Name\",\n  \"email\": \"new@example.com\",\n  \"role\": \"teacher\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users","{{userId}}"] } } },
+        { "name": "Delete User", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users","{{userId}}"] } } },
+        { "name": "Change Password (admin or self)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"currentPassword\": \"\",\n  \"newPassword\": \"newPass123\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/users/{{userId}}/change-password", "host": ["{{baseUrl}}"], "path": ["users","{{userId}}","change-password"] } } },
+        { "name": "My Profile", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/users/profile/me", "host": ["{{baseUrl}}"], "path": ["users","profile","me"] } } },
+        { "name": "Update My Profile", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"fullName\": \"My New Name\",\n  \"email\": \"me@example.com\"\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/users/profile/me", "host": ["{{baseUrl}}"], "path": ["users","profile","me"] } } }
+      ]
+    },
+    {
+      "name": "Announcements",
+      "item": [
+        { "name": "List Announcements", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements?page=1&limit=10&sortBy=publishedAt&sortOrder=desc&type=&course=&author=&targetAudience=&isActive=&search=", "host": ["{{baseUrl}}"], "path": ["announcements"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"publishedAt"},{"key":"sortOrder","value":"desc"},{"key":"type","value":""},{"key":"course","value":""},{"key":"author","value":""},{"key":"targetAudience","value":""},{"key":"isActive","value":""},{"key":"search","value":""} ] } } },
+        { "name": "Create Announcement", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"title\": \"Welcome\",\n  \"content\": \"Welcome students!\",\n  \"type\": \"general\",\n  \"course\": \"{{courseId}}\",\n  \"targetAudience\": \"all\",\n  \"isActive\": true\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/announcements", "host": ["{{baseUrl}}"], "path": ["announcements"] } } },
+        { "name": "Get Announcement", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements/{{announcementId}}", "host": ["{{baseUrl}}"], "path": ["announcements","{{announcementId}}"] } } },
+        { "name": "Update Announcement", "request": { "method": "PUT", "header": [ {"key":"Content-Type","value":"application/json"} ], "body": { "mode":"raw", "raw": "{\n  \"title\": \"Updated\",\n  \"content\": \"Updated content\",\n  \"type\": \"course\",\n  \"course\": \"{{courseId}}\",\n  \"targetAudience\": \"student\",\n  \"isActive\": false\n}", "options": {"raw":{"language":"json"}} }, "url": { "raw": "{{baseUrl}}/announcements/{{announcementId}}", "host": ["{{baseUrl}}"], "path": ["announcements","{{announcementId}}"] } } },
+        { "name": "Delete Announcement", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/announcements/{{announcementId}}", "host": ["{{baseUrl}}"], "path": ["announcements","{{announcementId}}"] } } },
+        { "name": "Toggle Status", "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/announcements/{{announcementId}}/toggle", "host": ["{{baseUrl}}"], "path": ["announcements","{{announcementId}}","toggle"] } } },
+        { "name": "Toggle Status (alias)", "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/announcements/{{announcementId}}/toggle-status", "host": ["{{baseUrl}}"], "path": ["announcements","{{announcementId}}","toggle-status"] } } },
+        { "name": "Mark As Read", "request": { "method": "PUT", "url": { "raw": "{{baseUrl}}/announcements/{{announcementId}}/read", "host": ["{{baseUrl}}"], "path": ["announcements","{{announcementId}}","read"] } } },
+        { "name": "Mark As Read (legacy)", "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/announcements/{{announcementId}}/mark-read", "host": ["{{baseUrl}}"], "path": ["announcements","{{announcementId}}","mark-read"] } } },
+        { "name": "Active Announcements", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements/active", "host": ["{{baseUrl}}"], "path": ["announcements","active"] } } },
+        { "name": "By Course", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements/course/{{courseId}}", "host": ["{{baseUrl}}"], "path": ["announcements","course","{{courseId}}"] } } },
+        { "name": "My Announcements", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements/user/me", "host": ["{{baseUrl}}"], "path": ["announcements","user","me"] } } },
+        { "name": "Active (legacy)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements/active/announcements", "host": ["{{baseUrl}}"], "path": ["announcements","active","announcements"] } } },
+        { "name": "By Course (legacy)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements/course/{{courseId}}/announcements", "host": ["{{baseUrl}}"], "path": ["announcements","course","{{courseId}}","announcements"] } } },
+        { "name": "My Announcements (legacy)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/announcements/user/my-announcements", "host": ["{{baseUrl}}"], "path": ["announcements","user","my-announcements"] } } }
+      ]
+    },
+    {
+      "name": "Data Explorer (admin)",
+      "item": [
+        { "name": "List Collection", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/data/{{collection}}?page=1&limit=10&sortBy=createdAt&sortOrder=desc&search=", "host": ["{{baseUrl}}"], "path": ["data","{{collection}}"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"createdAt"},{"key":"sortOrder","value":"desc"},{"key":"search","value":""} ] } } }
+      ]
+    }
+  ]
+}
