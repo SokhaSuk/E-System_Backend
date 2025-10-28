@@ -15,7 +15,7 @@ async function connect() {
 		socketTimeoutMS: 45000,
 	} as const;
 	await mongoose.connect(env.mongoUri, options);
-	console.log('✅ Connected to MongoDB');
+	console.log('Connected to MongoDB');
 }
 
 async function disconnect() {

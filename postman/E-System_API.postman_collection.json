@@ -120,7 +120,7 @@
         { "name": "List Announcements (overview)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/announcements?page=1&limit=10&sortBy=publishedAt&sortOrder=desc&type=&course=&author=&targetAudience=&isActive=&search=", "host": ["{{baseUrl}}"], "path": ["admin","announcements"], "query": [ {"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"sortBy","value":"publishedAt"},{"key":"sortOrder","value":"desc"},{"key":"type","value":""},{"key":"course","value":""},{"key":"author","value":""},{"key":"targetAudience","value":""},{"key":"isActive","value":""},{"key":"search","value":""} ] } } }
       ]
     },
-    {
+    {            
       "name": "Teacher",
       "item": [
         { "name": "Dashboard", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/teacher/dashboard", "host": ["{{baseUrl}}"], "path": ["teacher","dashboard"] } } },
@@ -224,3 +224,4 @@
     }
   ]
 }
+
