@@ -25,7 +25,7 @@ const recordAttendanceSchema = {
 		courseId: commonSchemas.objectId,
 		date: Joi.date().required(),
 		status: Joi.string()
-			.valid('present', 'absent', 'late', 'excused')
+			.valid('present', 'absent', 'late', 'permission')
 			.required(),
 		notes: Joi.string().optional(),
 	}),
@@ -40,7 +40,7 @@ const bulkAttendanceSchema = {
 				Joi.object({
 					studentId: commonSchemas.objectId,
 					status: Joi.string()
-						.valid('present', 'absent', 'late', 'excused')
+						.valid('present', 'absent', 'late', 'permission')
 						.required(),
 					notes: Joi.string().optional(),
 				})
@@ -62,7 +62,7 @@ router.get(
 			startDate: Joi.date().optional(),
 			endDate: Joi.date().optional(),
 			status: Joi.string()
-				.valid('present', 'absent', 'late', 'excused')
+				.valid('present', 'absent', 'late', 'permission')
 				.optional(),
 		}),
 	}),
@@ -107,7 +107,7 @@ router.put(
 	validate({
 		body: Joi.object({
 			status: Joi.string()
-				.valid('present', 'absent', 'late', 'excused')
+				.valid('present', 'absent', 'late', 'permission')
 				.required(),
 			notes: Joi.string().optional(),
 		}),

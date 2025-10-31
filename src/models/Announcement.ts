@@ -37,7 +37,7 @@ const announcementSchema = new Schema<AnnouncementDocument>(
 		targetAudience: [
 			{
 				type: String,
-				enum: ['admin', 'teacher', 'student', 'all'],
+				enum: ['teacher', 'student', 'all'],
 				default: ['all'],
 			},
 		],

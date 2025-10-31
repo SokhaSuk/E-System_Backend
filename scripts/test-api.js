@@ -90,11 +90,11 @@ async function testAPI() {
 if (require.main === module) {
 	testAPI()
 		.then(() => {
-			console.log('\n✅ All tests completed!');
+			console.log('\nAll tests completed!');
 			process.exit(0);
 		})
 		.catch(error => {
-			console.error('\n❌ Test failed:', error);
+			console.error('\nTest failed:', error);
 			process.exit(1);
 		});
 }

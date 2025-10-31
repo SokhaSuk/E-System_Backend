@@ -5,7 +5,7 @@
  */
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
-export type AttendanceStatus = 'present' | 'absent' | 'late' | 'excused';
+export type AttendanceStatus = 'present' | 'absent' | 'late' | 'permission';
 
 export interface AttendanceDocument extends Document {
 	_id: Types.ObjectId;
@@ -26,7 +26,7 @@ const attendanceSchema = new Schema<AttendanceDocument>(
 		date: { type: Date, required: true },
 		status: {
 			type: String,
-			enum: ['present', 'absent', 'late', 'excused'],
+			enum: ['present', 'absent', 'late', 'permission'],
 			required: true,
 			default: 'present',
 		},

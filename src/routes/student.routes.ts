@@ -164,7 +164,7 @@ router.get(
 			startDate: Joi.date().optional(),
 			endDate: Joi.date().optional(),
 			status: Joi.string()
-				.valid('present', 'absent', 'late', 'excused')
+				.valid('present', 'absent', 'late', 'permission')
 				.optional(),
 		}),
 	}),
