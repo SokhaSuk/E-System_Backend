@@ -1,8 +1,10 @@
+/**
+ * Auth Service
+ */
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { env } from '../config/env';
 import { UserRole } from '../models/User';
 
-/** Converts env JWT_EXPIRES_IN to seconds (supports s/m/h/d) with 7d default. */
 export function getTokenExpirySeconds(): number {
 	const ttl = env.jwtExpiresIn;
 	if (!ttl) return 7 * 24 * 60 * 60;
@@ -13,14 +15,10 @@ export function getTokenExpirySeconds(): number {
 		const value = Number(match[1]);
 		const unit = match[2].toLowerCase();
 		switch (unit) {
-			case 's':
-				return value;
-			case 'm':
-				return value * 60;
-			case 'h':
-				return value * 60 * 60;
-			case 'd':
-				return value * 24 * 60 * 60;
+			case 's': return value;
+			case 'm': return value * 60;
+			case 'h': return value * 60 * 60;
+			case 'd': return value * 24 * 60 * 60;
 		}
 	}
 	return 7 * 24 * 60 * 60;
@@ -28,12 +26,13 @@ export function getTokenExpirySeconds(): number {
 
 export interface AuthTokenPayload {
 	userId: string;
+	email: string;
 	role: UserRole;
 }
 
-/** Signs a JWT for the given payload */
 export function signAuthToken(payload: AuthTokenPayload): string {
 	const secret: Secret = env.jwtSecret as unknown as Secret;
 	const options: SignOptions = { expiresIn: getTokenExpirySeconds() };
 	return jwt.sign(payload as object, secret, options);
 }
+

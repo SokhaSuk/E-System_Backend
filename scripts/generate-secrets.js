@@ -11,7 +11,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔐 E-System Security Utilities\n');
+console.log('E-System Security Utilities\n');
 
 // Generate JWT Secret
 function generateJWTSecret() {
@@ -65,18 +65,18 @@ function main() {
 	const dbPassword = generateDBPassword();
 	console.log('DB_PASSWORD=' + dbPassword);
 
-	console.log('\n📝 Instructions:');
+	console.log('\nInstructions:');
 	console.log('1. Copy these values to your .env file');
 	console.log('2. Replace the placeholder values in .env.example');
 	console.log('3. Never commit your .env file to Git');
 
 	if (!envExists) {
-		console.log('\n💡 To create your .env file:');
+		console.log('\nTo create your .env file:');
 		console.log('   cp .env.example .env');
 		console.log('   Then replace the placeholder values with the ones above');
 	}
 
-	console.log('\n🔒 Security Tips:');
+	console.log('\nSecurity Tips:');
 	console.log('- Use different secrets for development and production');
 	console.log('- Rotate secrets regularly in production');
 	console.log(
@@ -84,7 +84,7 @@ function main() {
 	);
 	console.log('- Never share these secrets publicly');
 
-	console.log('\n✅ Done! Your secrets are ready to use.');
+	console.log('\nDone! Your secrets are ready to use.');
 }
 
 // Run if called directly
