@@ -54,6 +54,11 @@ export async function register(req: Request, res: Response) {
 
 	const finalRole: 'admin' | 'teacher' | 'student' = role || 'student';
 	if (finalRole === 'admin') {
+		// Ensure admin signup code is configured on the server
+		if (!env.adminSignupCode && env.nodeEnv !== 'test') {
+			throw createError('Admin registration is currently disabled', 403);
+		}
+
 		// Require adminCode to be provided
 		if (!adminCode) {
 			throw createError('Admin signup code is required', 400);
@@ -61,7 +66,7 @@ export async function register(req: Request, res: Response) {
 		// In tests, accept provided code to simplify setup
 		if (env.nodeEnv !== 'test') {
 			// If an admin signup code is configured, enforce it
-			if (env.adminSignupCode && adminCode !== env.adminSignupCode) {
+			if (adminCode !== env.adminSignupCode) {
 				throw createError('Admin signup code is invalid', 400);
 			}
 		}
