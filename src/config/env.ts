@@ -1,74 +1,56 @@
-/**
- * Environment configuration loader.
- *
- * Loads variables from the process environment (optionally from `.env`).
- * Provides a single `env` object for typed access throughout the app.
- */
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-/** Strongly-typed environment values used by the app. */
-export const env = {
-	// Server configuration
-	port: parseInt(process.env.PORT || '4000', 10),
+interface EnvConfig {
+	port: number;
+	nodeEnv: string;
+	mongoUri: string;
+	jwtSecret: string;
+	jwtExpiresIn: string;
+	adminSignupCode: string | undefined;
+	smtp: {
+		host: string | undefined;
+		port: number;
+		secure: boolean;
+		user: string | undefined;
+		pass: string | undefined;
+	};
+	frontendUrl: string | undefined;
+	corsOrigin: string | undefined;
+	corsCredentials: boolean;
+}
+
+export const env: EnvConfig = {
+	port: Number(process.env.PORT) || 4000,
+
 	nodeEnv: process.env.NODE_ENV || 'development',
 
-	// Database
-	mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/e_system',
+	mongoUri: process.env.MONGO_URI as string,
 
-	// Authentication
-	jwtSecret: process.env.JWT_SECRET || 'change-me-in-env',
+	jwtSecret: process.env.JWT_SECRET as string,
 	jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-	adminSignupCode: process.env.ADMIN_SIGNUP_CODE || '',
 
-	// SMTP Configuration
+	adminSignupCode: process.env.ADMIN_SIGNUP_CODE,
+
 	smtp: {
-		host: process.env.SMTP_HOST || 'smtp.gmail.com',
-		port: parseInt(process.env.SMTP_PORT || '587', 10),
+		host: process.env.SMTP_HOST,
+		port: Number(process.env.SMTP_PORT),
 		secure: process.env.SMTP_SECURE === 'true',
-		user: process.env.SMTP_USER || '',
-		password: process.env.SMTP_PASSWORD || '',
+		user: process.env.SMTP_USER,
+		pass: process.env.SMTP_PASS,
 	},
 
-	// File Upload
-	upload: {
-		maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10), // 10MB
-		allowedFileTypes: process.env.ALLOWED_FILE_TYPES?.split(',') || [
-			'image/jpeg',
-			'image/jpg',
-			'image/png',
-			'image/gif',
-			'application/pdf',
-			'application/msword',
-			'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-			'application/vnd.ms-excel',
-			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-			'text/plain',
-			'text/csv',
-		],
-		uploadPath: process.env.UPLOAD_PATH || 'uploads',
-	},
-
-	// Frontend URL (for email links)
-	frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-
-	// Rate Limiting
-	rateLimit: {
-		windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 minutes
-		max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
-		authMax: parseInt(process.env.RATE_LIMIT_AUTH_MAX || '5', 10),
-	},
-
-	// CORS
-	cors: {
-		origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
-		credentials: process.env.CORS_CREDENTIALS === 'true',
-	},
-
-	// Logging
-	logging: {
-		level: process.env.LOG_LEVEL || 'info',
-		enableFileLogging: process.env.ENABLE_FILE_LOGGING === 'true',
-	},
+	frontendUrl: process.env.FRONTEND_URL,
+	corsOrigin: process.env.CORS_ORIGIN,
+	corsCredentials: process.env.CORS_CREDENTIALS === 'true',
 };
+
+// ✅ Validate required variables early
+if (!env.mongoUri) {
+	throw new Error('❌ MONGO_URI is not defined in environment variables');
+}
+
+if (!env.jwtSecret) {
+	throw new Error('❌ JWT_SECRET is not defined in environment variables');
+}

@@ -31,7 +31,7 @@ const createTransporter = () => {
 		secure: env.smtp.secure,
 		auth: {
 			user: env.smtp.user,
-			pass: env.smtp.password,
+			pass: env.smtp.pass,
 		},
 	});
 };

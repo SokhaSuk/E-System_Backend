@@ -14,6 +14,7 @@ import { apiLimiter, authLimiter } from './middleware/rateLimit';
 import apiRouter from './routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
+import { morganStream } from './utils/logger';
 
 /**
  * Exported Express app instance, ready for testing and server startup.
@@ -28,8 +29,10 @@ app.use(apiLimiter);
 // CORS configuration
 app.use(
 	cors({
-		origin: env.cors.origin,
-		credentials: env.cors.credentials,
+		origin: env.corsOrigin?.includes(',')
+			? env.corsOrigin.split(',')
+			: env.corsOrigin || 'http://localhost:3000',
+		credentials: env.corsCredentials,
 	})
 );
 
@@ -39,9 +42,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging middleware
 if (env.nodeEnv === 'development') {
-	app.use(morgan('dev'));
+	app.use(morgan('dev', { stream: morganStream }));
 } else {
-	app.use(morgan('combined'));
+	app.use(morgan('combined', { stream: morganStream }));
 }
 
 // Security headers

@@ -1,104 +1,141 @@
 /**
- * Global error handling middleware.
+ * Enhanced Error Handler Middleware
+ * Centralized error handling with proper logging and response formatting
  */
-import { Request, Response, NextFunction } from 'express';
-import { env } from '../config/env';
 
-export interface AppError extends Error {
-	statusCode?: number;
-	isOperational?: boolean;
-	code?: string;
+import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../errors';
+import { HTTP_STATUS } from '../constants/http-status';
+import logger from '../utils/logger';
+
+// Re-export asyncHandler for backward compatibility
+export { asyncHandler } from './async-handler';
+
+/**
+ * Helper function to create errors (backward compatibility)
+ * @deprecated Use specific error classes from '../errors' instead
+ */
+export function createError(message: string, statusCode: number = 500): AppError {
+	return new AppError(message, statusCode as any);
 }
 
-export const createError = (
-	message: string,
-	statusCode: number = 500,
-	isOperational: boolean = true
-): AppError => {
-	const error = new Error(message) as AppError;
-	error.statusCode = statusCode;
-	error.isOperational = isOperational;
-	return error;
-};
+interface ErrorResponse {
+	status: 'error';
+	message: string;
+	statusCode: number;
+	timestamp: Date;
+	path?: string;
+	details?: any;
+	stack?: string;
+}
 
+/**
+ * Global error handler middleware
+ * Must be registered last in the middleware chain
+ */
 export const errorHandler = (
-	err: AppError,
+	err: Error | AppError,
 	req: Request,
 	res: Response,
-	_next: NextFunction
-) => {
-	let { statusCode = 500, message } = err;
+	next: NextFunction
+): void => {
+	// Default error values
+	let statusCode: number = HTTP_STATUS.INTERNAL_SERVER_ERROR;
+	let message = 'An unexpected error occurred';
+	let details: any = undefined;
+	let isOperational = false;
+
+	// Handle AppError instances
+	if (err instanceof AppError) {
+		statusCode = err.statusCode;
+		message = err.message;
+		details = err.details;
+		isOperational = err.isOperational;
+	}
 
 	// Handle Mongoose validation errors
 	if (err.name === 'ValidationError') {
-		statusCode = 400;
-		message = 'Validation Error';
+		statusCode = HTTP_STATUS.UNPROCESSABLE_ENTITY;
+		message = 'Validation failed';
+		details = Object.values((err as any).errors).map((e: any) => ({
+			field: e.path,
+			message: e.message,
+		}));
 	}
 
-	// Handle Mongo/Mongoose duplicate key errors
-	// Driver may set code as number 11000; Mongoose may wrap it differently
-	const anyErr: any = err as any;
-	if (anyErr && (anyErr.code === 11000 || anyErr.code === '11000')) {
-		statusCode = 409;
-		// Attempt to extract field name(s)
-		const fields = anyErr.keyValue ? Object.keys(anyErr.keyValue) : [];
-		const fieldList = fields.length ? ` (${fields.join(', ')})` : '';
-		message = `Duplicate value${fieldList}`;
+	// Handle Mongoose duplicate key errors
+	if ((err as any).code === 11000) {
+		statusCode = HTTP_STATUS.CONFLICT;
+		message = 'Duplicate entry';
+		const field = Object.keys((err as any).keyPattern)[0];
+		details = { field, message: `${field} already exists` };
 	}
 
 	// Handle Mongoose cast errors
 	if (err.name === 'CastError') {
-		statusCode = 400;
+		statusCode = HTTP_STATUS.BAD_REQUEST;
 		message = 'Invalid ID format';
 	}
 
 	// Handle JWT errors
 	if (err.name === 'JsonWebTokenError') {
-		statusCode = 401;
+		statusCode = HTTP_STATUS.UNAUTHORIZED;
 		message = 'Invalid token';
 	}
 
 	if (err.name === 'TokenExpiredError') {
-		statusCode = 401;
+		statusCode = HTTP_STATUS.UNAUTHORIZED;
 		message = 'Token expired';
 	}
 
-	// Log error in development (but skip common browser requests and 404s)
-	if (
-		env.nodeEnv === 'development' &&
-		!req.url.includes('favicon.ico') &&
-		statusCode !== 404
-	) {
-		console.error('Error:', {
-			message: err.message,
-			stack: err.stack,
-			statusCode: err.statusCode,
-			url: req.url,
-			method: req.method,
-			ip: req.ip,
-			userAgent: req.get('User-Agent'),
-		});
+	// Log the error
+	const logMessage = `${req.method} ${req.path} - ${statusCode} - ${message}`;
+	const logMetadata = {
+		method: req.method,
+		path: req.path,
+		statusCode,
+		ip: req.ip,
+		userAgent: req.get('user-agent'),
+		...(details && { details }),
+	};
+
+	if (statusCode >= 500) {
+		logger.error(logMessage, { ...logMetadata, stack: err.stack });
+	} else if (statusCode >= 400) {
+		logger.warn(logMessage, logMetadata);
+	}
+
+	// Prepare error response
+	const errorResponse: ErrorResponse = {
+		status: 'error',
+		message,
+		statusCode,
+		timestamp: new Date(),
+		path: req.path,
+		...(details && { details }),
+	};
+
+	// Include stack trace in development
+	if (process.env.NODE_ENV === 'development' && err.stack) {
+		errorResponse.stack = err.stack;
 	}
 
 	// Send error response
-	res.status(statusCode).json({
-		message,
-		...(env.nodeEnv === 'development' && { stack: err.stack }),
-		...(env.nodeEnv === 'development' && { error: err }),
-	});
+	res.status(statusCode).json(errorResponse);
 };
 
+/**
+ * 404 Not Found handler
+ * Should be registered before the error handler
+ */
 export const notFoundHandler = (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
-	const error = createError(`Route ${req.originalUrl} not found`, 404);
+): void => {
+	const error = new AppError(
+		`Route ${req.method} ${req.path} not found`,
+		HTTP_STATUS.NOT_FOUND
+	);
 	next(error);
-};
-
-export const asyncHandler = (fn: Function) => {
-	return (req: Request, res: Response, next: NextFunction) => {
-		Promise.resolve(fn(req, res, next)).catch(next);
-	};
 };

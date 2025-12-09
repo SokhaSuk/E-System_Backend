@@ -3,7 +3,13 @@
  */
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
-import { env } from '../config/env';
+
+// Define rate limit config locally since it was removed from global env
+const rateLimitConfig = {
+	windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+	max: Number(process.env.RATE_LIMIT_MAX) || 100,
+	authMax: Number(process.env.RATE_LIMIT_AUTH_MAX) || 5,
+};
 
 // General API rate limiter
 function formatWindowMs(ms: number): string {
@@ -15,29 +21,29 @@ function formatWindowMs(ms: number): string {
 }
 
 export const apiLimiter = rateLimit({
-	windowMs: env.rateLimit.windowMs,
-	max: env.rateLimit.max,
+	windowMs: rateLimitConfig.windowMs,
+	max: rateLimitConfig.max,
 	message: {
 		message: 'Too many requests from this IP, please try again later.',
-		retryAfter: formatWindowMs(env.rateLimit.windowMs),
+		retryAfter: formatWindowMs(rateLimitConfig.windowMs),
 	},
 	standardHeaders: true,
 	legacyHeaders: false,
 	handler: (req: Request, res: Response) => {
 		res.status(429).json({
 			message: 'Too many requests from this IP, please try again later.',
-			retryAfter: formatWindowMs(env.rateLimit.windowMs),
+			retryAfter: formatWindowMs(rateLimitConfig.windowMs),
 		});
 	},
 });
 
 // Stricter limiter for auth routes
 export const authLimiter = rateLimit({
-	windowMs: env.rateLimit.windowMs,
-	max: env.rateLimit.authMax,
+	windowMs: rateLimitConfig.windowMs,
+	max: rateLimitConfig.authMax,
 	message: {
 		message: 'Too many authentication attempts, please try again later.',
-		retryAfter: formatWindowMs(env.rateLimit.windowMs),
+		retryAfter: formatWindowMs(rateLimitConfig.windowMs),
 	},
 	standardHeaders: true,
 	legacyHeaders: false,
@@ -45,7 +51,7 @@ export const authLimiter = rateLimit({
 	handler: (req: Request, res: Response) => {
 		res.status(429).json({
 			message: 'Too many authentication attempts, please try again later.',
-			retryAfter: formatWindowMs(env.rateLimit.windowMs),
+			retryAfter: formatWindowMs(rateLimitConfig.windowMs),
 		});
 	},
 });

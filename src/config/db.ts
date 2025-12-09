@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { env } from './env';
+import chalk from 'chalk';
 
 /** Connects to MongoDB using Mongoose. */
 export async function connectToDatabase(): Promise<void> {
@@ -11,25 +12,30 @@ export async function connectToDatabase(): Promise<void> {
 			socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
 		};
 
+		console.log(chalk.gray('⏳ Connecting to MongoDB...'));
+
 		await mongoose.connect(env.mongoUri, options);
 
-		console.log('✅ Successfully connected to MongoDB');
-		console.log(`📊 Database: ${env.mongoUri}`);
+
+		console.log(chalk.green('✅ Successfully connected to MongoDB'));
+		// Mask password in logs if present
+		const maskedUri = env.mongoUri.replace(/(:\/\/)([^:]+):([^@]+)@/, '$1$2:*****@');
+		console.log(`📊 Database: ${chalk.cyan(maskedUri)}`);
 
 		// Handle connection events
 		mongoose.connection.on('error', err => {
-			console.error('❌ MongoDB connection error:', err);
+			console.error(chalk.red('❌ MongoDB connection error:'), err);
 		});
 
 		mongoose.connection.on('disconnected', () => {
-			console.warn('⚠️ MongoDB disconnected');
+			console.warn(chalk.yellow('⚠️ MongoDB disconnected'));
 		});
 
 		mongoose.connection.on('reconnected', () => {
-			console.log('🔄 MongoDB reconnected');
+			console.log(chalk.green('🔄 MongoDB reconnected'));
 		});
 	} catch (error) {
-		console.error('❌ Failed to connect to MongoDB:', error);
+		console.error(chalk.red('❌ Failed to connect to MongoDB:'), error);
 		throw error;
 	}
 }
@@ -38,9 +44,9 @@ export async function connectToDatabase(): Promise<void> {
 export async function disconnectFromDatabase(): Promise<void> {
 	try {
 		await mongoose.disconnect();
-		console.log('✅ Disconnected from MongoDB');
+		console.log(chalk.green('✅ Disconnected from MongoDB'));
 	} catch (error) {
-		console.error('❌ Error disconnecting from MongoDB:', error);
+		console.error(chalk.red('❌ Error disconnecting from MongoDB:'), error);
 		throw error;
 	}
 }
