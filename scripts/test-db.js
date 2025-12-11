@@ -27,7 +27,7 @@ async function testDatabaseConnection() {
 		});
 
 		console.log('✅ Database connection successful!');
-		console.log(`📊 Database: ${mongoose.connection.db.databaseName}`);
+		// console.log(`📊 Database: ${mongoose.connection.db.databaseName}`);
 		console.log(`🔗 Host: ${mongoose.connection.host}`);
 		console.log(`🚪 Port: ${mongoose.connection.port}`);
 
