@@ -20,7 +20,7 @@ export async function connectToDatabase(): Promise<void> {
 		console.log(chalk.green('✅ Successfully connected to MongoDB'));
 		// Mask password in logs if present
 		const maskedUri = env.mongoUri.replace(/(:\/\/)([^:]+):([^@]+)@/, '$1$2:*****@');
-		// console.log(`📊 Database: ${chalk.cyan(maskedUri)}`);
+		console.log(`📊 Database: ${chalk.cyan(maskedUri)}`);
 
 		// Handle connection events
 		mongoose.connection.on('error', err => {
