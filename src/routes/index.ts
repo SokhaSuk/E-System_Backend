@@ -12,6 +12,7 @@ import userRoutes from './user.routes';
 import gradeRoutes from './grade.routes';
 import announcementRoutes from './announcement.routes';
 import dataRoutes from './data.routes';
+import chatRoutes from './chat.routes';
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.get('/', (_req, res) => {
 			users: '/api/v1/users',
 			grades: '/api/v1/grades',
 			announcements: '/api/v1/announcements',
+			chat: '/api/v1/chat',
 		},
 		docs: {
 			openapi: '/openapi.json',
@@ -50,5 +52,6 @@ router.use('/users', userRoutes);
 router.use('/grades', gradeRoutes);
 router.use('/announcements', announcementRoutes);
 router.use('/data', dataRoutes);
+router.use('/chat', chatRoutes);
 
 export default router;

@@ -6,6 +6,17 @@ export interface CreateUserDto {
     email: string;
     password: string;
     role?: 'admin' | 'teacher' | 'student';
+    nameKh?: string;
+    gender?: string;
+    dateOfBirth?: Date;
+    placeOfBirth?: string;
+    phone?: string;
+    occupation?: string;
+    address?: string;
+    studyShift?: string;
+    avatar?: string;
+    nationality?: string;
+    studentId?: string;
 }
 
 /**
@@ -15,6 +26,17 @@ export interface UpdateUserDto {
     fullName?: string;
     email?: string;
     role?: 'admin' | 'teacher' | 'student';
+    nameKh?: string;
+    gender?: string;
+    dateOfBirth?: Date;
+    placeOfBirth?: string;
+    phone?: string;
+    occupation?: string;
+    address?: string;
+    studyShift?: string;
+    avatar?: string;
+    nationality?: string;
+    studentId?: string;
 }
 
 /**
@@ -33,6 +55,17 @@ export interface UserResponseDto {
     fullName: string;
     email: string;
     role: 'admin' | 'teacher' | 'student';
+    nameKh?: string;
+    gender?: string;
+    dateOfBirth?: Date;
+    placeOfBirth?: string;
+    phone?: string;
+    occupation?: string;
+    address?: string;
+    studyShift?: string;
+    avatar?: string;
+    nationality?: string;
+    studentId?: string;
     createdAt: Date;
     updatedAt: Date;
 }

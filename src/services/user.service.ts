@@ -117,6 +117,17 @@ export class UserService {
             email: data.email.toLowerCase(),
             passwordHash,
             role: data.role || 'student',
+            nameKh: data.nameKh,
+            gender: data.gender,
+            dateOfBirth: data.dateOfBirth,
+            placeOfBirth: data.placeOfBirth,
+            phone: data.phone,
+            occupation: data.occupation,
+            address: data.address,
+            studyShift: data.studyShift,
+            avatar: data.avatar,
+            nationality: data.nationality,
+            studentId: data.studentId,
         } as any);
 
         return this.toResponseDto(user);
@@ -158,6 +169,17 @@ export class UserService {
         if (data.fullName) updateData.fullName = data.fullName;
         if (data.email) updateData.email = data.email.toLowerCase();
         if (data.role) updateData.role = data.role;
+        if (data.nameKh !== undefined) updateData.nameKh = data.nameKh;
+        if (data.gender !== undefined) updateData.gender = data.gender;
+        if (data.dateOfBirth !== undefined) updateData.dateOfBirth = data.dateOfBirth;
+        if (data.placeOfBirth !== undefined) updateData.placeOfBirth = data.placeOfBirth;
+        if (data.phone !== undefined) updateData.phone = data.phone;
+        if (data.occupation !== undefined) updateData.occupation = data.occupation;
+        if (data.address !== undefined) updateData.address = data.address;
+        if (data.studyShift !== undefined) updateData.studyShift = data.studyShift;
+        if (data.avatar !== undefined) updateData.avatar = data.avatar;
+        if (data.nationality !== undefined) updateData.nationality = data.nationality;
+        if (data.studentId !== undefined) updateData.studentId = data.studentId;
 
         const updatedUser = await userRepository.update(id, updateData);
         if (!updatedUser) {
@@ -276,6 +298,17 @@ export class UserService {
         const updateData: any = {};
         if (data.fullName) updateData.fullName = data.fullName;
         if (data.email) updateData.email = data.email.toLowerCase();
+        if (data.nameKh !== undefined) updateData.nameKh = data.nameKh;
+        if (data.gender !== undefined) updateData.gender = data.gender;
+        if (data.dateOfBirth !== undefined) updateData.dateOfBirth = data.dateOfBirth;
+        if (data.placeOfBirth !== undefined) updateData.placeOfBirth = data.placeOfBirth;
+        if (data.phone !== undefined) updateData.phone = data.phone;
+        if (data.occupation !== undefined) updateData.occupation = data.occupation;
+        if (data.address !== undefined) updateData.address = data.address;
+        if (data.studyShift !== undefined) updateData.studyShift = data.studyShift;
+        if (data.avatar !== undefined) updateData.avatar = data.avatar;
+        if (data.nationality !== undefined) updateData.nationality = data.nationality;
+        if (data.studentId !== undefined) updateData.studentId = data.studentId;
 
         const updatedUser = await userRepository.update(userId, updateData);
         if (!updatedUser) {
@@ -294,6 +327,17 @@ export class UserService {
             fullName: user.fullName,
             email: user.email,
             role: user.role,
+            nameKh: user.nameKh,
+            gender: user.gender,
+            dateOfBirth: user.dateOfBirth,
+            placeOfBirth: user.placeOfBirth,
+            phone: user.phone,
+            occupation: user.occupation,
+            address: user.address,
+            studyShift: user.studyShift,
+            avatar: user.avatar,
+            nationality: user.nationality,
+            studentId: user.studentId,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         };

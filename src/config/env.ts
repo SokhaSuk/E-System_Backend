@@ -19,6 +19,7 @@ interface EnvConfig {
 	frontendUrl: string | undefined;
 	corsOrigin: string | undefined;
 	corsCredentials: boolean;
+	geminiApiKey: string | undefined;
 }
 
 export const env: EnvConfig = {
@@ -44,6 +45,7 @@ export const env: EnvConfig = {
 	frontendUrl: process.env.FRONTEND_URL,
 	corsOrigin: process.env.CORS_ORIGIN,
 	corsCredentials: process.env.CORS_CREDENTIALS === 'true',
+	geminiApiKey: process.env.GEMINI_API_KEY,
 };
 
 // ✅ Validate required variables early

@@ -39,13 +39,24 @@ function signToken(payload: {
 
 /** POST /api/auth/register */
 export async function register(req: Request, res: Response) {
-	const { fullName, email, password, role, adminCode } = req.body as {
-		fullName: string;
-		email: string;
-		password: string;
-		role?: 'admin' | 'teacher' | 'student';
-		adminCode?: string;
-	};
+	const {
+		fullName,
+		email,
+		password,
+		role,
+		adminCode,
+		nameKh,
+		gender,
+		dateOfBirth,
+		placeOfBirth,
+		phone,
+		occupation,
+		address,
+		studyShift,
+		avatar,
+		nationality,
+		studentId,
+	} = req.body as any;
 
 	const existing = await UserModel.findOne({ email });
 	if (existing) {
@@ -78,6 +89,17 @@ export async function register(req: Request, res: Response) {
 		email,
 		passwordHash,
 		role: finalRole,
+		nameKh,
+		gender,
+		dateOfBirth,
+		placeOfBirth,
+		phone,
+		occupation,
+		address,
+		studyShift,
+		avatar,
+		nationality,
+		studentId,
 	});
 
 	const token = signToken({ userId: user._id.toString(), role: user.role });
@@ -88,6 +110,17 @@ export async function register(req: Request, res: Response) {
 			fullName: user.fullName,
 			email: user.email,
 			role: user.role,
+			nameKh: user.nameKh,
+			gender: user.gender,
+			dateOfBirth: user.dateOfBirth,
+			placeOfBirth: user.placeOfBirth,
+			phone: user.phone,
+			occupation: user.occupation,
+			address: user.address,
+			studyShift: user.studyShift,
+			avatar: user.avatar,
+			nationality: user.nationality,
+			studentId: user.studentId,
 		},
 	});
 }
@@ -130,6 +163,17 @@ export async function profile(req: Request, res: Response) {
 		fullName: req.user.fullName,
 		email: req.user.email,
 		role: req.user.role,
+		nameKh: req.user.nameKh,
+		gender: req.user.gender,
+		dateOfBirth: req.user.dateOfBirth,
+		placeOfBirth: req.user.placeOfBirth,
+		phone: req.user.phone,
+		occupation: req.user.occupation,
+		address: req.user.address,
+		studyShift: req.user.studyShift,
+		avatar: req.user.avatar,
+		nationality: req.user.nationality,
+		studentId: req.user.studentId,
 		createdAt: req.user.createdAt,
 		updatedAt: req.user.updatedAt,
 	});

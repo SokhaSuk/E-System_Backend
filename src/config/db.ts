@@ -16,7 +16,6 @@ export async function connectToDatabase(): Promise<void> {
 
 		await mongoose.connect(env.mongoUri, options);
 
-
 		console.log(chalk.green('✅ Successfully connected to MongoDB'));
 		// Mask password in logs if present
 		const maskedUri = env.mongoUri.replace(/(:\/\/)([^:]+):([^@]+)@/, '$1$2:*****@');

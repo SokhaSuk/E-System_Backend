@@ -25,6 +25,17 @@ const registerSchema = Joi.object({
 	password: Joi.string().min(6).required(),
 	role: Joi.string().valid('admin', 'teacher', 'student').optional(),
 	adminCode: Joi.string().optional(),
+	nameKh: Joi.string().optional().allow(''),
+	gender: Joi.string().optional().allow(''),
+	dateOfBirth: Joi.date().optional(),
+	placeOfBirth: Joi.string().optional().allow(''),
+	phone: Joi.string().optional().allow(''),
+	occupation: Joi.string().optional().allow(''),
+	address: Joi.string().optional().allow(''),
+	studyShift: Joi.string().optional().allow(''),
+	avatar: Joi.string().optional().allow(''),
+	nationality: Joi.string().optional().allow(''),
+	studentId: Joi.string().optional().allow(''),
 });
 
 const loginSchema = Joi.object({

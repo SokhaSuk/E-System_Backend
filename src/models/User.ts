@@ -7,6 +7,17 @@ export interface UserDocument extends Document {
 	email: string;
 	passwordHash: string;
 	role: UserRole;
+	nameKh?: string;
+	gender?: string;
+	dateOfBirth?: Date;
+	placeOfBirth?: string;
+	phone?: string;
+	occupation?: string;
+	address?: string;
+	studyShift?: string;
+	avatar?: string;
+	nationality?: string;
+	studentId?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -31,6 +42,17 @@ const userSchema = new Schema<UserDocument>(
 			required: true,
 			default: 'student',
 		},
+		nameKh: { type: String, trim: true },
+		gender: { type: String, trim: true },
+		dateOfBirth: { type: Date },
+		placeOfBirth: { type: String, trim: true },
+		phone: { type: String, trim: true },
+		occupation: { type: String, trim: true },
+		address: { type: String, trim: true },
+		studyShift: { type: String, trim: true },
+		avatar: { type: String, trim: true },
+		nationality: { type: String, trim: true },
+		studentId: { type: String, trim: true, unique: true, sparse: true },
 	},
 	{ timestamps: true }
 );
