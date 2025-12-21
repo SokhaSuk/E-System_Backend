@@ -145,9 +145,9 @@ const usersData = [
 
 const coursesData = [
 	{
-		title: 'Introduction to Computer Science',
-		description: 'Foundations of computing, algorithms, and problem solving.',
-		code: 'CS101',
+		title: 'Mobile App Development',
+		description: 'Principles of mobile application development for Android and iOS.',
+		code: 'MOB101',
 		credits: 3,
 		semester: 'Fall',
 		academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
@@ -159,10 +159,10 @@ const coursesData = [
 		],
 	},
 	{
-		title: 'Data Structures and Algorithms',
+		title: 'Software Engineering',
 		description:
-			'Advanced programming concepts with focus on data structures and algorithmic thinking.',
-		code: 'CS201',
+			'Methodologies for software design, development, testing, and maintenance.',
+		code: 'SE101',
 		credits: 4,
 		semester: 'Fall',
 		academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
@@ -173,10 +173,10 @@ const coursesData = [
 		],
 	},
 	{
-		title: 'Calculus I',
-		description: 'Differential and integral calculus with applications.',
-		code: 'MATH101',
-		credits: 4,
+		title: 'Management Information Systems',
+		description: 'Study of people, technology, and organizations.',
+		code: 'MIS101',
+		credits: 3,
 		semester: 'Fall',
 		academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
 		students: [
@@ -187,9 +187,9 @@ const coursesData = [
 		],
 	},
 	{
-		title: 'Physics I',
-		description: 'Mechanics, thermodynamics, and waves.',
-		code: 'PHYS101',
+		title: 'Windows Server Administration',
+		description: 'Installation, configuration, and management of Windows Server.',
+		code: 'WIN101',
 		credits: 4,
 		semester: 'Spring',
 		academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
@@ -200,9 +200,9 @@ const coursesData = [
 		],
 	},
 	{
-		title: 'English Literature',
-		description: 'Survey of English literature from medieval to modern times.',
-		code: 'ENGL201',
+		title: 'Object-Oriented Analysis and Design',
+		description: 'Analyzing and designing software systems using UML.',
+		code: 'OOAD101',
 		credits: 3,
 		semester: 'Spring',
 		academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
@@ -215,10 +215,10 @@ const coursesData = [
 ];
 
 const gradesData = [
-	// CS101 grades
+	// MOB101 grades
 	{
 		student: 'alice.thompson@student.university.edu',
-		course: 'CS101',
+		course: 'MOB101',
 		type: 'assignment',
 		title: 'Assignment 1',
 		score: 88,
@@ -226,7 +226,7 @@ const gradesData = [
 	},
 	{
 		student: 'alice.thompson@student.university.edu',
-		course: 'CS101',
+		course: 'MOB101',
 		type: 'quiz',
 		title: 'Quiz 1',
 		score: 92,
@@ -234,7 +234,7 @@ const gradesData = [
 	},
 	{
 		student: 'alice.thompson@student.university.edu',
-		course: 'CS101',
+		course: 'MOB101',
 		type: 'exam',
 		title: 'Midterm Exam',
 		score: 85,
@@ -242,7 +242,7 @@ const gradesData = [
 	},
 	{
 		student: 'bob.martinez@student.university.edu',
-		course: 'CS101',
+		course: 'MOB101',
 		type: 'assignment',
 		title: 'Assignment 1',
 		score: 76,
@@ -250,7 +250,7 @@ const gradesData = [
 	},
 	{
 		student: 'bob.martinez@student.university.edu',
-		course: 'CS101',
+		course: 'MOB101',
 		type: 'quiz',
 		title: 'Quiz 1',
 		score: 82,
@@ -258,7 +258,7 @@ const gradesData = [
 	},
 	{
 		student: 'carol.williams@student.university.edu',
-		course: 'CS101',
+		course: 'MOB101',
 		type: 'assignment',
 		title: 'Assignment 1',
 		score: 94,
@@ -266,51 +266,51 @@ const gradesData = [
 	},
 	{
 		student: 'david.brown@student.university.edu',
-		course: 'CS101',
+		course: 'MOB101',
 		type: 'quiz',
 		title: 'Quiz 1',
 		score: 78,
 		maxScore: 100,
 	},
 
-	// CS201 grades
+	// SE101 grades
 	{
 		student: 'alice.thompson@student.university.edu',
-		course: 'CS201',
+		course: 'SE101',
 		type: 'project',
-		title: 'Data Structure Project',
+		title: 'Software Design Project',
 		score: 91,
 		maxScore: 100,
 	},
 	{
 		student: 'bob.martinez@student.university.edu',
-		course: 'CS201',
+		course: 'SE101',
 		type: 'assignment',
-		title: 'Algorithm Assignment',
+		title: 'Architecture Assignment',
 		score: 84,
 		maxScore: 100,
 	},
 	{
 		student: 'emma.davis@student.university.edu',
-		course: 'CS201',
+		course: 'SE101',
 		type: 'exam',
 		title: 'Final Exam',
 		score: 89,
 		maxScore: 100,
 	},
 
-	// MATH101 grades
+	// MIS101 grades
 	{
 		student: 'carol.williams@student.university.edu',
-		course: 'MATH101',
+		course: 'MIS101',
 		type: 'quiz',
-		title: 'Calculus Quiz 1',
+		title: 'MIS Quiz 1',
 		score: 96,
 		maxScore: 100,
 	},
 	{
 		student: 'david.brown@student.university.edu',
-		course: 'MATH101',
+		course: 'MIS101',
 		type: 'exam',
 		title: 'Midterm Exam',
 		score: 87,
@@ -318,7 +318,7 @@ const gradesData = [
 	},
 	{
 		student: 'emma.davis@student.university.edu',
-		course: 'MATH101',
+		course: 'MIS101',
 		type: 'assignment',
 		title: 'Problem Set 1',
 		score: 93,
@@ -326,9 +326,9 @@ const gradesData = [
 	},
 	{
 		student: 'frank.wilson@student.university.edu',
-		course: 'MATH101',
+		course: 'MIS101',
 		type: 'quiz',
-		title: 'Calculus Quiz 1',
+		title: 'MIS Quiz 1',
 		score: 79,
 		maxScore: 100,
 	},
@@ -344,12 +344,12 @@ const announcementsData = [
 		isActive: true,
 	},
 	{
-		title: 'CS101 - Assignment Due Next Week',
+		title: 'MOB101 - Assignment Due Next Week',
 		content:
 			"Don't forget that Assignment 1 is due next Friday. Please submit your work through the online portal.",
 		type: 'course',
 		targetAudience: ['student'],
-		course: 'CS101',
+		course: 'MOB101',
 		isActive: true,
 	},
 	{

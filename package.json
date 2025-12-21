@@ -21,6 +21,7 @@
     "generate-secrets": "node scripts/generate-secrets.js",
     "db:test": "node scripts/test-db.js",
     "db:seed": "ts-node scripts/seed.ts",
+    "seed": "npm run db:seed",
     "test:api": "node scripts/test-api.js",
     "status": "node scripts/status.js"
   },
