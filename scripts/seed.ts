@@ -199,7 +199,7 @@ const coursesData = [
 		description: 'Installation, configuration, and management of Windows Server.',
 		code: 'WIN101',
 		credits: 4,
-		semester: 'Spring',
+		semester: 'Semester2',
 		academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
 		students: [
 			'grace.lee@student.university.edu',
@@ -212,7 +212,7 @@ const coursesData = [
 		description: 'Analyzing and designing software systems using UML.',
 		code: 'OOAD101',
 		credits: 3,
-		semester: 'Spring',
+		semester: 'Semester2',
 		academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
 		students: [
 			'jack.miller@student.university.edu',

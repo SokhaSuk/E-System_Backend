@@ -25,7 +25,7 @@ const createCourseSchema = {
 		description: Joi.string().required().min(10),
 		code: Joi.string().required().min(2).max(10).uppercase(),
 		credits: Joi.number().integer().min(1).max(6).required(),
-		semester: Joi.string().valid('Fall', 'Spring', 'Summer').required(),
+		semester: Joi.string().valid('Semester1', 'Semester2').required(),
 		academicYear: Joi.string().required(),
 	}),
 };
@@ -36,7 +36,7 @@ const updateCourseSchema = {
 		description: Joi.string().min(10),
 		code: Joi.string().min(2).max(10).uppercase(),
 		credits: Joi.number().integer().min(1).max(6),
-		semester: Joi.string().valid('Fall', 'Spring', 'Summer'),
+		semester: Joi.string().valid('Semester1', 'Semester2'),
 		academicYear: Joi.string(),
 		isActive: Joi.boolean(),
 	}),
@@ -56,7 +56,7 @@ router.get(
 		query: Joi.object({
 			...commonSchemas.pagination,
 			teacher: commonSchemas.objectId.optional(),
-			semester: Joi.string().valid('Fall', 'Spring', 'Summer').optional(),
+			semester: Joi.string().valid('Semester1', 'Semester2').optional(),
 			academicYear: Joi.string().optional(),
 			isActive: Joi.boolean().optional(),
 			search: Joi.string().optional(),

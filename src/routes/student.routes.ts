@@ -23,7 +23,7 @@ router.get(
 			fullName: user.fullName,
 			email: user.email,
 			role: user.role,
-			nameKh:user.nameKh,
+			nameKh: user.nameKh,
 			gender: user.gender,
 			dateOfBirth: user.dateOfBirth,
 			placeOfBirth: user.placeOfBirth,
@@ -47,7 +47,7 @@ router.get(
 		query: Joi.object({
 			...commonSchemas.pagination,
 			studentId: commonSchemas.objectId.optional(),
-			semester: Joi.string().valid('Fall', 'Spring', 'Summer').optional(),
+			semester: Joi.string().valid('Semester1', 'Semester2').optional(),
 			academicYear: Joi.string().optional(),
 		}),
 	}),
@@ -108,7 +108,7 @@ router.get(
 					'final'
 				)
 				.optional(),
-			semester: Joi.string().valid('Fall', 'Spring', 'Summer').optional(),
+			semester: Joi.string().valid('Semester1', 'Semester2').optional(),
 		}),
 	}),
 	asyncHandler(async (req: Request, res: Response) => {
@@ -237,7 +237,7 @@ router.get(
 	'/transcript',
 	validate({
 		query: Joi.object({
-			semester: Joi.string().valid('Fall', 'Spring', 'Summer').optional(),
+			semester: Joi.string().valid('Semester1', 'Semester2').optional(),
 			academicYear: Joi.string().optional(),
 		}),
 	}),
@@ -289,7 +289,7 @@ router.get(
 			const averagePercentage =
 				courseGradeRecords.length > 0
 					? courseGradeRecords.reduce((sum, g) => sum + g.percentage, 0) /
-						courseGradeRecords.length
+					courseGradeRecords.length
 					: 0;
 
 			return {
@@ -369,13 +369,11 @@ router.get(
 		const currentYear = currentDate.getFullYear();
 		const currentMonth = currentDate.getMonth() + 1;
 
-		let currentSemester = 'Spring';
+		let currentSemester = 'Semester2';
 		if (currentMonth >= 8 && currentMonth <= 12) {
-			currentSemester = 'Fall';
+			currentSemester = 'Semester1';
 		} else if (currentMonth >= 1 && currentMonth <= 5) {
-			currentSemester = 'Spring';
-		} else {
-			currentSemester = 'Summer';
+			currentSemester = 'Semester2';
 		}
 
 		const currentSemesterCourses = await CourseModel.find({

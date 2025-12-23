@@ -31,7 +31,7 @@ const courseSchema = new Schema<CourseDocument>(
 		semester: {
 			type: String,
 			required: true,
-			enum: ['Fall', 'Spring', 'Summer'],
+			enum: ['Semester1', 'Semester2'],
 		},
 		academicYear: { type: String, required: true },
 		isActive: { type: Boolean, default: true },

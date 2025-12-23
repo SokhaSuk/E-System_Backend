@@ -7,7 +7,7 @@ export interface CreateCourseDto {
     description: string;
     code: string;
     credits: number;
-    semester: 'Fall' | 'Spring' | 'Summer';
+    semester: 'Semester1' | 'Semester2';
     academicYear: string;
 }
 
@@ -16,14 +16,14 @@ export interface UpdateCourseDto {
     description?: string;
     code?: string;
     credits?: number;
-    semester?: 'Fall' | 'Spring' | 'Summer';
+    semester?: 'Semester1' | 'Semester2';
     academicYear?: string;
     isActive?: boolean;
 }
 
 export interface CourseFilterDto {
     teacher?: string;
-    semester?: 'Fall' | 'Spring' | 'Summer';
+    semester?: 'Semester1' | 'Semester2';
     academicYear?: string;
     isActive?: boolean;
     search?: string;

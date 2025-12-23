@@ -81,12 +81,12 @@ router.delete(
 	validate({ params: Joi.object({ id: commonSchemas.objectId }) }),
 	asyncHandler(userController.deleteUser)
 );
-router.post(
-	'/:id/change-password',
+router.put(
+	'/:id/change_password',
 	validate({
 		params: Joi.object({ id: commonSchemas.objectId }),
 		body: Joi.object({
-			currentPassword: Joi.string().min(6).optional(),
+			currentPassword: Joi.string().optional(),
 			newPassword: commonSchemas.password,
 		}),
 	}),
