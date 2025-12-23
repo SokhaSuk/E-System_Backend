@@ -8,6 +8,7 @@ import { CourseModel } from '../models/Course';
 import { GradeModel } from '../models/Grade';
 import { AttendanceModel } from '../models/Attendance';
 import { AnnouncementModel } from '../models/Announcement';
+import { ScoreRecordModel } from '../models/ScoreRecord';
 
 const router = Router();
 
@@ -278,7 +279,7 @@ router.get(
 			const averagePercentage =
 				courseGradeRecords.length > 0
 					? courseGradeRecords.reduce((sum, g) => sum + g.percentage, 0) /
-						courseGradeRecords.length
+					courseGradeRecords.length
 					: 0;
 
 			return {
@@ -491,8 +492,15 @@ router.get(
 		const attendancePercentage =
 			totalAttendance > 0 ? (presentAttendance / totalAttendance) * 100 : 0;
 
+		// Get Score Record (Transcript Summary for this course)
+		const scoreRecord = await ScoreRecordModel.findOne({
+			student: studentId,
+			course: courseId,
+		});
+
 		return res.json({
 			course,
+			scoreRecord,
 			grades,
 			attendance: {
 				records: attendance,

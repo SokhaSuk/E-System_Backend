@@ -6,6 +6,7 @@ import { CourseModel } from '../src/models/Course';
 import { AttendanceModel } from '../src/models/Attendance';
 import { AnnouncementModel } from '../src/models/Announcement';
 import { GradeModel } from '../src/models/Grade';
+import { ScoreRecordModel } from '../src/models/ScoreRecord';
 import { hashPassword } from '../src/utils/password';
 
 async function connect() {
@@ -141,6 +142,12 @@ const usersData = [
 		role: 'student' as const,
 		password: 'StudentPass123!',
 	},
+	{
+		fullName: 'Kimleap',
+		email: 'kimleap@student.university.edu',
+		role: 'student' as const,
+		password: 'StudentPass123!',
+	},
 ];
 
 const coursesData = [
@@ -156,6 +163,7 @@ const coursesData = [
 			'bob.martinez@student.university.edu',
 			'carol.williams@student.university.edu',
 			'david.brown@student.university.edu',
+			'kimleap@student.university.edu',
 		],
 	},
 	{
@@ -271,6 +279,40 @@ const gradesData = [
 		title: 'Quiz 1',
 		score: 78,
 		maxScore: 100,
+	},
+
+	// Kimleap's MOB101 grades
+	{
+		student: 'kimleap@student.university.edu',
+		course: 'MOB101',
+		type: 'participation',
+		title: 'Attendance',
+		score: 6,
+		maxScore: 10,
+	},
+	{
+		student: 'kimleap@student.university.edu',
+		course: 'MOB101',
+		type: 'assignment',
+		title: 'Assignment',
+		score: 4,
+		maxScore: 5,
+	},
+	{
+		student: 'kimleap@student.university.edu',
+		course: 'MOB101',
+		type: 'exam',
+		title: 'Midterm',
+		score: 15,
+		maxScore: 20,
+	},
+	{
+		student: 'kimleap@student.university.edu',
+		course: 'MOB101',
+		type: 'final',
+		title: 'Final',
+		score: 45.5,
+		maxScore: 50,
 	},
 
 	// SE101 grades
@@ -440,8 +482,158 @@ async function createAttendanceRecords(
 		}
 	}
 
+	// FORCE ATTENDANCE FOR KIMLEAP in MOB101
+	// We want exactly 6 'present' records to match the grade of 6.
+	const kimleap = users.find(u => u.email === 'kimleap@student.university.edu');
+	const mob101 = courses.find(c => c.code === 'MOB101');
+
+	if (kimleap && mob101) {
+		console.log('✨ Creating specific attendance for Kimleap in MOB101...');
+		const teacher = users.find(
+			u => u.role === 'teacher' && mob101.teacher?.toString() === u._id.toString()
+		);
+
+		// Create 6 PRESENT records
+		for (let i = 0; i < 6; i++) {
+			const date = new Date();
+			date.setDate(date.getDate() - (i + 1)); // Past 6 days
+
+			attendancePromises.push(AttendanceModel.findOneAndUpdate(
+				{
+					student: kimleap._id,
+					course: mob101._id,
+					date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+				},
+				{
+					$setOnInsert: {
+						student: kimleap._id,
+						course: mob101._id,
+						date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+						status: 'present',
+						recordedBy: teacher?._id,
+					},
+				},
+				{ upsert: true, new: true }
+			) as any);
+		}
+		// Create 4 ABSENT/LATE records
+		for (let i = 6; i < 10; i++) {
+			const date = new Date();
+			date.setDate(date.getDate() - (i + 1));
+
+			attendancePromises.push(AttendanceModel.findOneAndUpdate(
+				{
+					student: kimleap._id,
+					course: mob101._id,
+					date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+				},
+				{
+					$setOnInsert: {
+						student: kimleap._id,
+						course: mob101._id,
+						date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+						status: 'absent',
+						recordedBy: teacher?._id,
+					},
+				},
+				{ upsert: true, new: true }
+			) as any);
+		}
+	}
+
 	await Promise.all(attendancePromises);
 	console.log(`✅ Created attendance records for ${days} days`);
+
+	// DEBUG: Verify Kimleap Enrollment
+	if (kimleap && mob101) {
+		const freshMob = await CourseModel.findById(mob101._id);
+		const isEnrolled = freshMob?.students.some(id => id.toString() === kimleap._id.toString());
+		console.log('------------------------------------------------');
+		console.log(`🔍 VERIFICATION: Kimleap ID: ${kimleap._id}`);
+		console.log(`🔍 VERIFICATION: MOB101 ID: ${mob101._id}`);
+		console.log(`🔍 VERIFICATION: Enrolled in DB? ${isEnrolled ? 'YES ✅' : 'NO ❌'}`);
+		console.log('------------------------------------------------');
+	}
+}
+
+async function createScoreRecords(users: UserDocument[], courses: any[]) {
+	console.log('📈 Creating score records...');
+
+	for (const course of courses) {
+		const studentsInCourse = course.students;
+		if (!studentsInCourse || studentsInCourse.length === 0) continue;
+
+		for (const studentId of studentsInCourse) {
+			const student = users.find(u => u._id.toString() === studentId.toString());
+			if (!student) continue;
+
+			// Get all grades for this student and course
+			const grades = await GradeModel.find({
+				student: student._id,
+				course: course._id,
+			});
+
+			let attendanceScore = 0;
+			let assignmentScore = 0;
+			let midtermScore = 0;
+			let finalScore = 0;
+
+			for (const grade of grades) {
+				if (grade.gradeType === 'participation') {
+					attendanceScore += grade.score;
+				} else if (grade.gradeType === 'assignment' || grade.gradeType === 'project') {
+					assignmentScore += grade.score;
+				} else if (grade.gradeType === 'exam') {
+					// Assuming 'exam' type is Midterm based on the seed data being labeled "Midterm"
+					if (grade.title.toLowerCase().includes('midterm')) {
+						midtermScore += grade.score;
+					} else if (grade.title.toLowerCase().includes('final')) {
+						finalScore += grade.score;
+					} else {
+						// Fallback if title doesn't specify, treat generic exam as midterm for now or split logic
+						midtermScore += grade.score;
+					}
+				} else if (grade.gradeType === 'final') {
+					finalScore += grade.score;
+				} else if (grade.gradeType === 'quiz') {
+					// Maybe quiz counts towards assignment?
+					assignmentScore += grade.score;
+				}
+			}
+
+			// Calculate Total
+			const totalScore = attendanceScore + assignmentScore + midtermScore + finalScore;
+
+			// Determine Grade (Simple Logic)
+			let gradeLetter = 'F';
+			if (totalScore >= 90) gradeLetter = 'A';
+			else if (totalScore >= 80) gradeLetter = 'B';
+			else if (totalScore >= 70) gradeLetter = 'C';
+			else if (totalScore >= 60) gradeLetter = 'D';
+
+			await ScoreRecordModel.findOneAndUpdate(
+				{
+					student: student._id,
+					course: course._id,
+				},
+				{
+					$setOnInsert: {
+						student: student._id,
+						course: course._id,
+						semester: course.semester,
+						attendanceScore,
+						assignmentScore,
+						midtermScore,
+						finalScore,
+						totalScore,
+						grade: gradeLetter,
+					},
+				},
+				{ upsert: true, new: true }
+			);
+		}
+	}
+	console.log('✅ Created score records for all enrolled students');
 }
 
 async function run() {
@@ -486,16 +678,18 @@ async function run() {
 			const course = (await CourseModel.findOneAndUpdate(
 				{ code: courseData.code },
 				{
-					$setOnInsert: {
+					$set: {
 						title: courseData.title,
 						description: courseData.description,
-						code: courseData.code,
 						credits: courseData.credits,
 						teacher: teacher._id,
 						students: enrolledStudents.map(s => s._id),
 						semester: courseData.semester,
 						academicYear: courseData.academicYear,
 						isActive: true,
+					},
+					$setOnInsert: {
+						code: courseData.code,
 					},
 				},
 				{ upsert: true, new: true }
@@ -556,6 +750,9 @@ async function run() {
 
 		// Create attendance records
 		await createAttendanceRecords(users, courses);
+
+		// Create score records
+		await createScoreRecords(users, courses);
 
 		// Create announcements
 		console.log('📣 Creating announcements...');
