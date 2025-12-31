@@ -13,7 +13,7 @@ import gradeRoutes from './grade.routes';
 import announcementRoutes from './announcement.routes';
 import dataRoutes from './data.routes';
 import chatRoutes from './chat.routes';
-import scoreRecordRoutes from './scorerecord.routes.js';
+import scoreRecordRoutes from './scorerecord.routes';
 const router = Router();
 
 // API documentation/root endpoint
