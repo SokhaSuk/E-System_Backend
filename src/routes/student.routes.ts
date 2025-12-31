@@ -8,6 +8,7 @@ import { CourseModel } from '../models/Course';
 import { GradeModel } from '../models/Grade';
 import { AttendanceModel } from '../models/Attendance';
 import { AnnouncementModel } from '../models/Announcement';
+import { ScoreRecordModel } from '../models/ScoreRecord';
 
 const router = Router();
 
@@ -330,6 +331,62 @@ router.get(
 		});
 	})
 );
+
+//score record
+router.get(
+  '/scorerecords',
+  validate({
+    query: Joi.object({
+      courseId: commonSchemas.objectId.optional(),
+      semester: Joi.string().valid('Semester1', 'Semester2').optional(),
+      studentId: commonSchemas.objectId.optional(), // ✅ allow admin
+    }),
+  }),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { courseId, semester, studentId: queryStudentId } = req.query as any;
+
+    // ✅ STUDENT → ONLY own data from token
+    // ✅ ADMIN → must pass studentId
+    let studentId: string;
+
+    if (req.user!.role === 'student') {
+      studentId = req.user!._id.toString();
+    } else {
+      if (!queryStudentId) {
+        return res
+          .status(400)
+          .json({ message: 'studentId is required for admin requests' });
+      }
+      studentId = queryStudentId;
+    }
+
+    const filter: any = { student: studentId };
+    if (courseId) filter.course = courseId;
+
+    let records = await ScoreRecordModel.find(filter)
+      .populate('course', 'title code semester academicYear')
+      .sort({ createdAt: -1 })
+      .lean(); // ✅ prevents TS + mutation errors
+
+    // ✅ Filter semester inside array
+    if (semester) {
+      records = records.map(record => ({
+        ...record,
+        semesters: record.semesters.filter(
+          (s: any) => s.name === semester
+        ),
+      }));
+    }
+
+    return res.json({
+      studentId,
+      count: records.length,
+      data: records,
+    });
+  })
+);
+
+
 
 // Get student's dashboard/summary
 router.get(

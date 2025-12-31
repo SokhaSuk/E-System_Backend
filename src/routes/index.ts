@@ -13,7 +13,7 @@ import gradeRoutes from './grade.routes';
 import announcementRoutes from './announcement.routes';
 import dataRoutes from './data.routes';
 import chatRoutes from './chat.routes';
-
+import scorerecordroutes from './scorerecord.routes';
 const router = Router();
 
 // API documentation/root endpoint
@@ -53,5 +53,6 @@ router.use('/grades', gradeRoutes);
 router.use('/announcements', announcementRoutes);
 router.use('/data', dataRoutes);
 router.use('/chat', chatRoutes);
+router.use('/scorerecords',scorerecordroutes);
 
 export default router;
