@@ -41,12 +41,12 @@ const semesterSchema = new Schema<Semester>(
     { _id: true } // Giving semesters IDs allows for easier specific updates
 );
 
-// Middleware to calculate total and grade before saving
-semesterSchema.pre('save', function (next) {
-    this.total = this.attendance + this.assignment + this.midterm + this.final;
-    this.grade = calculateGrade(this.total);
-    next();
-});
+// Helper function to calculate semester total and grade
+export const calculateSemesterScores = (semester: Semester): Semester => {
+    const total = semester.attendance + semester.assignment + semester.midterm + semester.final;
+    const grade = calculateGrade(total);
+    return { ...semester, total, grade };
+};
 
 const scoreRecordSchema = new Schema<ScoreRecordDocument>(
     {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ScoreRecordModel, Semester } from "../models/ScoreRecord";
+import { ScoreRecordModel, Semester, calculateSemesterScores } from "../models/ScoreRecord";
 import mongoose from "mongoose";
 
 /**
@@ -9,9 +9,12 @@ export const createScoreRecord = async (req: Request, res: Response) => {
     try {
         const { student, course, semesters } = req.body;
 
-        const record = new ScoreRecordModel({ student, course, semesters });
+        // Calculate total and grade for each semester
+        const calculatedSemesters = semesters?.map((sem: Semester) => calculateSemesterScores(sem)) || [];
+
+        const record = new ScoreRecordModel({ student, course, semesters: calculatedSemesters });
         const saved = await record.save();
-        
+
         res.status(201).json(saved);
     } catch (error: any) {
         if (error.code === 11000) {
@@ -28,7 +31,7 @@ export const getAllScoreRecords = async (req: Request, res: Response) => {
     try {
         const { student, course, page = 1, limit = 10 } = req.query;
         const query: any = {};
-        
+
         if (student) query.student = student;
         if (course) query.course = course;
 
@@ -76,8 +79,10 @@ export const addSemester = async (req: Request, res: Response) => {
         const record = await ScoreRecordModel.findById(req.params.id);
         if (!record) return res.status(404).json({ message: "Record not found" });
 
-        record.semesters.push(req.body);
-        const updated = await record.save(); // save() triggers the pre-save hooks for calculations
+        // Calculate total and grade before adding
+        const calculatedSemester = calculateSemesterScores(req.body);
+        record.semesters.push(calculatedSemester);
+        const updated = await record.save();
         res.json(updated);
     } catch (error: any) {
         res.status(500).json({ message: error.message });
@@ -95,6 +100,34 @@ export const deleteSemester = async (req: Request, res: Response) => {
             { $pull: { semesters: { _id: semesterId } } },
             { new: true }
         );
+        res.json(updated);
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * Update a specific semester within a record
+ */
+export const updateSemester = async (req: Request, res: Response) => {
+    try {
+        const { id, semesterId } = req.params;
+        const record = await ScoreRecordModel.findById(id);
+        if (!record) return res.status(404).json({ message: "Record not found" });
+
+        // Find the semester by ID
+        const semester = (record.semesters as any).id(semesterId);
+        if (!semester) return res.status(404).json({ message: "Semester not found" });
+
+        // Update semester fields
+        Object.assign(semester, req.body);
+
+        // Recalculate total and grade
+        const calculated = calculateSemesterScores(semester.toObject());
+        semester.total = calculated.total;
+        semester.grade = calculated.grade;
+
+        const updated = await record.save();
         res.json(updated);
     } catch (error: any) {
         res.status(500).json({ message: error.message });

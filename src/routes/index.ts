@@ -13,7 +13,7 @@ import gradeRoutes from './grade.routes';
 import announcementRoutes from './announcement.routes';
 import dataRoutes from './data.routes';
 import chatRoutes from './chat.routes';
-import scorerecordroutes from './scorerecord.routes';
+import scoreRecordRoutes from './scorerecord.routes.js';
 const router = Router();
 
 // API documentation/root endpoint
@@ -33,6 +33,7 @@ router.get('/', (_req, res) => {
 			grades: '/api/v1/grades',
 			announcements: '/api/v1/announcements',
 			chat: '/api/v1/chat',
+			scorerecords: '/api/v1/scorerecords',
 		},
 		docs: {
 			openapi: '/openapi.json',
@@ -53,6 +54,6 @@ router.use('/grades', gradeRoutes);
 router.use('/announcements', announcementRoutes);
 router.use('/data', dataRoutes);
 router.use('/chat', chatRoutes);
-router.use('/scorerecords',scorerecordroutes);
+router.use('/scorerecords', scoreRecordRoutes);
 
 export default router;
