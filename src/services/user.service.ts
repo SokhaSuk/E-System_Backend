@@ -60,6 +60,15 @@ export class UserService {
      * Get user by ID with authorization
      */
     async getUserById(id: string, currentUser: UserDocument): Promise<UserResponseDto> {
+        // Admins can view any user
+        if (currentUser.role === 'admin') {
+            const user = await userRepository.findByIdWithoutPassword(id);
+            if (!user) {
+                throw createError('User not found', 404);
+            }
+            return this.toResponseDto(user);
+        }
+
         // Students can only view their own profile
         if (currentUser.role === 'student' && id !== currentUser._id.toString()) {
             throw createError('Students can only view their own profile', 403);
