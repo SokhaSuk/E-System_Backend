@@ -14,6 +14,7 @@ import announcementRoutes from './announcement.routes';
 import dataRoutes from './data.routes';
 import chatRoutes from './chat.routes';
 import scoreRecordRoutes from './scorerecord.routes';
+import exerciseRoutes from './exercise.routes';
 const router = Router();
 
 // API documentation/root endpoint
@@ -34,6 +35,7 @@ router.get('/', (_req, res) => {
 			announcements: '/api/v1/announcements',
 			chat: '/api/v1/chat',
 			scorerecords: '/api/v1/scorerecords',
+			exercises: '/api/v1/exercises',
 		},
 		docs: {
 			openapi: '/openapi.json',
@@ -55,5 +57,6 @@ router.use('/announcements', announcementRoutes);
 router.use('/data', dataRoutes);
 router.use('/chat', chatRoutes);
 router.use('/scorerecords', scoreRecordRoutes);
+router.use('/exercises', exerciseRoutes);
 
 export default router;

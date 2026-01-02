@@ -25,6 +25,10 @@ const storage = multer.diskStorage({
 			subDir = 'announcements';
 		} else if (file.fieldname === 'course') {
 			subDir = 'courses';
+		} else if (file.fieldname === 'exercise') {
+			subDir = 'exercises';
+		} else if (file.fieldname === 'submission') {
+			subDir = 'submissions';
 		}
 
 		const fullPath = path.join(uploadsDir, subDir);
@@ -98,6 +102,8 @@ export const profileUpload = upload.single('profile');
 export const assignmentUpload = upload.array('assignment', 5);
 export const announcementUpload = upload.array('announcement', 3);
 export const courseUpload = upload.array('course', 10);
+export const exerciseUpload = upload.single('exercise');
+export const submissionUpload = upload.array('submission', 5);
 
 // File deletion utility
 export const deleteFile = (filePath: string): Promise<void> => {
