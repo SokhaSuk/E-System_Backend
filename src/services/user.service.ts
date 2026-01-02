@@ -319,6 +319,47 @@ export class UserService {
     }
 
     /**
+     * Change current user's password
+     */
+    async changeUserProfilePassword(
+        userId: string,
+        passwords: ChangePasswordDto
+    ): Promise<{ message: string }> {
+        if (!passwords.currentPassword) {
+            throw createError('Current password is required', 400);
+        }
+
+        if (!passwords.newPassword || passwords.newPassword.length < 6) {
+            throw createError(
+                'New password must be at least 6 characters long',
+                400
+            );
+        }
+
+        const user = await userRepository.findById(userId);
+        if (!user) {
+            throw createError('User not found', 404);
+        }
+
+        // Verify current password
+        const isValidPassword = await verifyPassword(
+            passwords.currentPassword,
+            user.passwordHash
+        );
+        if (!isValidPassword) {
+            throw createError('Current password is incorrect', 400);
+        }
+
+        // Hash new password
+        const passwordHash = await hashPassword(passwords.newPassword);
+
+        // Update password
+        await userRepository.updatePassword(userId, passwordHash);
+
+        return { message: 'Password updated successfully' };
+    }
+
+    /**
      * Convert User model to response DTO
      */
     private toResponseDto(user: UserDocument): UserResponseDto {

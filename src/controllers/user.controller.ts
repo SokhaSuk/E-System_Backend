@@ -77,3 +77,13 @@ export async function updateUserProfile(req: Request, res: Response) {
 	);
 	return res.json(user);
 }
+
+export async function changeUserProfilePassword(req: Request, res: Response) {
+	const dto: ChangePasswordDto = req.body;
+	const result = await userService.changeUserProfilePassword(
+		req.user!._id.toString(),
+		dto
+	);
+	return res.json(result);
+}
+

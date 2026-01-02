@@ -116,5 +116,15 @@ router.put(
 	}),
 	asyncHandler(userController.updateUserProfile)
 );
+router.put(
+	'/profile/me/change-password',
+	validate({
+		body: Joi.object({
+			currentPassword: Joi.string().required(),
+			newPassword: commonSchemas.password,
+		}),
+	}),
+	asyncHandler(userController.changeUserProfilePassword)
+);
 
 export default router;
