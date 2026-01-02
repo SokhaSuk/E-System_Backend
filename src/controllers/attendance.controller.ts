@@ -10,7 +10,7 @@ import { createError } from '../middleware/errorHandler';
 export async function listAttendance(req: Request, res: Response) {
 	const {
 		page = 1,
-		limit = 10,
+		limit = 100,
 		sortBy = 'date',
 		sortOrder = 'desc',
 		student,
