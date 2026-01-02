@@ -360,6 +360,27 @@ export class UserService {
     }
 
     /**
+     * Update user's profile picture
+     */
+    async updateProfilePicture(
+        userId: string,
+        file: Express.Multer.File
+    ): Promise<string> {
+        const user = await userRepository.findById(userId);
+        if (!user) {
+            throw createError('User not found', 404);
+        }
+
+        // Generate file URL
+        const avatarUrl = `/uploads/profiles/${file.filename}`;
+
+        // Update user's avatar
+        await userRepository.update(userId, { avatar: avatarUrl });
+
+        return avatarUrl;
+    }
+
+    /**
      * Convert User model to response DTO
      */
     private toResponseDto(user: UserDocument): UserResponseDto {

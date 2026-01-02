@@ -54,6 +54,8 @@ const fileFilter = (
 		'image/jpg',
 		'image/png',
 		'image/gif',
+		'image/heic',
+		'image/heif',
 		'application/pdf',
 		'application/msword',
 		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

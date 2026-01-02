@@ -6,6 +6,7 @@ import * as userController from '../controllers/user.controller';
 import { authenticate } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { validate, commonSchemas } from '../middleware/validation';
+import { profileUpload } from '../utils/upload';
 import Joi from 'joi';
 
 const router = Router();
@@ -125,6 +126,11 @@ router.put(
 		}),
 	}),
 	asyncHandler(userController.changeUserProfilePassword)
+);
+router.post(
+	'/profile/me/upload-picture',
+	profileUpload,
+	asyncHandler(userController.uploadProfilePicture)
 );
 
 export default router;

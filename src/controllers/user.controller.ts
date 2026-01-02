@@ -87,3 +87,19 @@ export async function changeUserProfilePassword(req: Request, res: Response) {
 	return res.json(result);
 }
 
+export async function uploadProfilePicture(req: Request, res: Response) {
+	if (!req.file) {
+		return res.status(400).json({ error: 'No file uploaded' });
+	}
+
+	const avatarUrl = await userService.updateProfilePicture(
+		req.user!._id.toString(),
+		req.file
+	);
+
+	return res.json({
+		message: 'Profile picture uploaded successfully',
+		avatarUrl,
+	});
+}
+
