@@ -1,0 +1,1 @@
+{"version":3,"file":"ForbiddenError.d.ts","sourceRoot":"","sources":["../../src/errors/ForbiddenError.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAIH,OAAO,EAAE,QAAQ,EAAE,MAAM,YAAY,CAAC;AAEtC,qBAAa,cAAe,SAAQ,QAAQ;gBAC5B,OAAO,GAAE,MAAgD;CAIxE"}

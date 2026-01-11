@@ -1,0 +1,23 @@
+{
+  "name": "@e-system/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean"
+  },
+  "dependencies": {
+    "joi": "^17.12.2",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.17.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.9.2"
+  }
+}

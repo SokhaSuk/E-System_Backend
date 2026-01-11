@@ -1,20 +1,15 @@
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": "src",
-    "strict": false,
-    "noImplicitAny": false,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "types": ["node", "jest"]
-  },
-  "include": ["src"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/__tests__/**/*"]
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./services/api-gateway" },
+    { "path": "./services/auth" },
+    { "path": "./services/user" },
+    { "path": "./services/course" },
+    { "path": "./services/attendance" },
+    { "path": "./services/grade" },
+    { "path": "./services/content" }
+  ]
 }
 
 

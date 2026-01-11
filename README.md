@@ -1,397 +1,215 @@
-# E-System Backend API
+# E-System Microservices Architecture
 
-A comprehensive educational management system backend built with Node.js, Express, TypeScript, and MongoDB.
+This project has been converted to a microservices architecture with the following services:
 
-## 🚀 Features
+## Services
 
-### Core Features
-- **User Authentication & Authorization** - JWT-based authentication with role-based access control
-- **User Management** - Admin, Teacher, and Student roles with different permissions
-- **Course Management** - Create, update, and manage courses with student enrollment
-- **Attendance Tracking** - Record and manage student attendance with bulk operations
-- **Grade Management** - Track student grades and assessments with automatic letter grade calculation
-- **Announcements** - System-wide and course-specific announcements
+### API Gateway (Port 4000)
 
-### Advanced Features
-- **File Upload System** - Secure file uploads with validation and organization
-- **Email Notifications** - Automated email notifications for various events
-- **Rate Limiting** - API protection against abuse
-- **Input Validation** - Comprehensive request validation using Joi
-- **Error Handling** - Centralized error handling with detailed logging
-- **Pagination & Filtering** - Advanced query capabilities with search and sorting
-- **API Documentation** - Built-in API documentation endpoint
+- **Purpose**: Routes requests to appropriate microservices
+- **Features**: Authentication, rate limiting, request forwarding
+- **URL**: http://localhost:4000
 
-### Security Features
-- **Password Hashing** - Secure password storage using bcrypt
-- **JWT Authentication** - Stateless authentication with configurable expiration
-- **CORS Protection** - Configurable cross-origin resource sharing
-- **Request Validation** - Input sanitization and validation
-- **Rate Limiting** - Protection against brute force attacks
+### Auth Service (Port 4001)
 
-## 📋 Prerequisites
+- **Purpose**: User authentication and authorization
+- **Features**: Registration, login, JWT token management
+- **Database**: `e_system_auth`
 
-- Node.js (v16 or higher)
-- MongoDB (v4.4 or higher)
-- npm or yarn
+### User Service (Port 4002)
 
-## 🛠️ Installation
+- **Purpose**: User profile management
+- **Features**: User CRUD, profile updates, profile pictures
+- **Database**: `e_system_user`
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd E-System_Backend
-   ```
+### Course Service (Port 4003)
 
-2. **Install dependencies**
+- **Purpose**: Course management
+- **Features**: Course CRUD, enrollment, teacher assignment
+- **Database**: `e_system_course`
+
+### Attendance Service (Port 4004)
+
+- **Purpose**: Attendance tracking
+- **Features**: Record attendance, bulk operations, statistics
+- **Database**: `e_system_attendance`
+
+### Grade Service (Port 4005)
+
+- **Purpose**: Grade management
+- **Features**: Grade CRUD, score records, calculations
+- **Database**: `e_system_grade`
+
+### Content Service (Port 4006)
+
+- **Purpose**: Content management (announcements, chat, exercises)
+- **Features**: Announcements, chat, exercises, Gemini AI integration
+- **Database**: `e_system_content`
+
+## Getting Started
+
+### Development Mode
+
+1. **Install dependencies for all services**:
+
    ```bash
    npm install
    ```
 
-3. **Environment Setup**
-   
-   **⚠️ SECURITY FIRST:** Never commit your `.env` file to Git!
-   
-   a) Copy the example environment file:
+2. **Build shared packages**:
+
    ```bash
-   cp .env.example .env
-   ```
-   
-   b) Generate secure secrets:
-   ```bash
-   npm run generate-secrets
-   ```
-   
-   c) Update your `.env` file with the generated values and your actual configuration:
-   ```env
-   # Server Configuration
-   PORT=4000
-   NODE_ENV=development
-   
-   # Database (use your actual MongoDB connection string)
-   MONGO_URI=mongodb://127.0.0.1:27017/e_system
-   
-   # Authentication (use the generated JWT_SECRET)
-   JWT_SECRET=your-generated-jwt-secret-here
-   JWT_EXPIRES_IN=7d
-   ADMIN_SIGNUP_CODE=your-generated-admin-code
-   
-   # SMTP Configuration (for email notifications)
-   SMTP_HOST=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_SECURE=false
-   SMTP_USER=your-email@gmail.com
-   SMTP_PASSWORD=your-app-password
-   
-   # File Upload
-   MAX_FILE_SIZE=10485760
-   UPLOAD_PATH=uploads
-   
-   # Frontend URL (for email links)
-   FRONTEND_URL=http://localhost:3000
-   
-   # CORS
-   CORS_ORIGIN=http://localhost:3000
-   CORS_CREDENTIALS=true
-   
-   # Rate Limiting
-   RATE_LIMIT_WINDOW_MS=900000
-   RATE_LIMIT_MAX=100
-   RATE_LIMIT_AUTH_MAX=5
+   npm run build:shared
    ```
 
-4. **Start the development server**
+3. **Run all services concurrently**:
+
    ```bash
    npm run dev
    ```
 
-## 🔒 Security
+4. **Run individual services**:
+   ```bash
+   npm run dev:gateway    # API Gateway
+   npm run dev:auth       # Auth Service
+   npm run dev:user       # User Service
+   npm run dev:course     # Course Service
+   npm run dev:attendance # Attendance Service
+   npm run dev:grade      # Grade Service
+   npm run dev:content    # Content Service
+   ```
 
-### Important Security Notes
-- **NEVER commit `.env` files to Git** - They contain sensitive information
-- **Use strong, unique passwords** for all services
-- **Generate secure JWT secrets** using the provided script
-- **Use HTTPS in production** environments
-- **Regularly update dependencies** to patch security vulnerabilities
+### Docker Deployment
 
-### Security Features
-- ✅ Environment variables for all sensitive data
-- ✅ JWT-based authentication with secure secrets
-- ✅ Password hashing with bcrypt
-- ✅ Input validation and sanitization
-- ✅ Rate limiting to prevent abuse
-- ✅ CORS protection
-- ✅ File upload validation
-- ✅ Role-based access control
+1. **Build all services**:
 
-### Quick Security Setup
+   ```bash
+   npm run docker:build
+   ```
+
+2. **Start all services**:
+
+   ```bash
+   npm run docker:up
+   ```
+
+3. **View logs**:
+
+   ```bash
+   npm run docker:logs
+   ```
+
+4. **Stop all services**:
+   ```bash
+   npm run docker:down
+   ```
+
+## API Endpoints
+
+All requests go through the API Gateway at `http://localhost:4000/api/v1`
+
+### Authentication
+
+- `POST /api/v1/auth/register` - Register new user
+- `POST /api/v1/auth/login` - Login user
+- `GET /api/v1/auth/profile` - Get user profile
+
+### Users
+
+- `GET /api/v1/users` - List users
+- `GET /api/v1/users/:id` - Get user by ID
+- `PUT /api/v1/users/:id` - Update user
+- `DELETE /api/v1/users/:id` - Delete user
+
+### Courses
+
+- `GET /api/v1/courses` - List courses
+- `POST /api/v1/courses` - Create course
+- `GET /api/v1/courses/:id` - Get course
+- `PUT /api/v1/courses/:id` - Update course
+- `POST /api/v1/courses/:id/enroll` - Enroll student
+
+### Attendance
+
+- `POST /api/v1/attendance` - Record attendance
+- `POST /api/v1/attendance/bulk` - Bulk attendance
+- `GET /api/v1/attendance/stats/:courseId` - Get statistics
+
+### Grades
+
+- `GET /api/v1/grades` - List grades
+- `POST /api/v1/grades` - Create grade
+- `PUT /api/v1/grades/:id` - Update grade
+
+### Content
+
+- `GET /api/v1/announcements` - List announcements
+- `POST /api/v1/announcements` - Create announcement
+- `GET /api/v1/chat` - Get chat messages
+- `POST /api/v1/chat` - Send chat message
+- `GET /api/v1/exercises` - List exercises
+- `POST /api/v1/exercises` - Create exercise
+
+## Health Checks
+
+- API Gateway: http://localhost:4000/health
+- Auth Service: http://localhost:4001/health
+- User Service: http://localhost:4002/health
+- Course Service: http://localhost:4003/health
+- Attendance Service: http://localhost:4004/health
+- Grade Service: http://localhost:4005/health
+- Content Service: http://localhost:4006/health
+- All Services: http://localhost:4000/health/services
+
+## Database Management
+
+Access Mongo Express at http://localhost:8081
+
+- Username: `admin`
+- Password: `admin123`
+
+## Project Structure
+
+```
+E-System_Backend/
+├── packages/
+│   └── shared/              # Shared types, errors, utils, constants
+├── services/
+│   ├── api-gateway/         # API Gateway service
+│   ├── auth/                # Auth service
+│   ├── user/                # User service
+│   ├── course/              # Course service
+│   ├── attendance/          # Attendance service
+│   ├── grade/               # Grade service
+│   └── content/             # Content service
+├── docker-compose.yml       # Docker Compose configuration
+├── package.json             # Root package.json with workspaces
+└── tsconfig.base.json       # Base TypeScript configuration
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and update the values:
+
 ```bash
-# Generate secure secrets
-npm run generate-secrets
-
-# Create environment file
 cp .env.example .env
-
-# Update .env with generated secrets
-# (Edit the file manually with the generated values)
 ```
 
-For detailed security information, see [SECURITY.md](./SECURITY.md).
+See `.env.example` for all available configuration options.
 
-## 📚 API Documentation
+## Migration from Monolith
 
-### Base URL
-```
-http://localhost:4000
-```
+The original monolithic application has been decomposed into microservices:
 
-### Authentication Endpoints
+- Each service has its own dedicated MongoDB database
+- Services communicate via REST APIs
+- API Gateway handles authentication and routing
+- Shared code is in the `packages/shared` directory
 
-#### Register User
-```http
-POST /api/auth/register
-Content-Type: application/json
+## Development Notes
 
-{
-  "fullName": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "role": "student",
-  "adminCode": "admin123" // Required for admin registration
-}
-```
-
-#### Login
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-#### Get Profile
-```http
-GET /api/auth/profile
-Authorization: Bearer <jwt-token>
-```
-
-### Course Management
-
-#### Get All Courses (with pagination and filtering)
-```http
-GET /api/courses?page=1&limit=10&search=math&semester=Fall&academicYear=2024
-Authorization: Bearer <jwt-token>
-```
-
-#### Create Course (Teachers & Admins only)
-```http
-POST /api/courses
-Authorization: Bearer <jwt-token>
-Content-Type: application/json
-
-{
-  "title": "Advanced Mathematics",
-  "description": "Advanced mathematical concepts and applications",
-  "code": "MATH301",
-  "credits": 3,
-  "semester": "Fall",
-  "academicYear": "2024"
-}
-```
-
-#### Enroll Student in Course
-```http
-POST /api/courses/:courseId/enroll
-Authorization: Bearer <jwt-token>
-Content-Type: application/json
-
-{
-  "studentId": "student-id-here"
-}
-```
-
-### Attendance Management
-
-#### Record Bulk Attendance
-```http
-POST /api/attendance/bulk
-Authorization: Bearer <jwt-token>
-Content-Type: application/json
-
-{
-  "courseId": "course-id-here",
-  "date": "2024-01-15",
-  "attendance": [
-    {
-      "studentId": "student-id-1",
-      "status": "present",
-      "notes": "On time"
-    },
-    {
-      "studentId": "student-id-2",
-      "status": "absent",
-      "notes": "No excuse provided"
-    }
-  ]
-}
-```
-
-#### Get Attendance Statistics
-```http
-GET /api/attendance/stats/:courseId?startDate=2024-01-01&endDate=2024-01-31
-Authorization: Bearer <jwt-token>
-```
-
-### File Upload
-
-#### Upload Profile Picture
-```http
-POST /api/upload/profile
-Authorization: Bearer <jwt-token>
-Content-Type: multipart/form-data
-
-profile: [file]
-```
-
-#### Upload Assignment Files
-```http
-POST /api/upload/assignment
-Authorization: Bearer <jwt-token>
-Content-Type: multipart/form-data
-
-assignment: [file1, file2, file3]
-```
-
-## 🗂️ Project Structure
-
-```
-src/
-├── config/           # Configuration files
-│   ├── db.ts        # Database connection
-│   └── env.ts       # Environment variables
-├── middleware/       # Express middleware
-│   ├── auth.ts      # Authentication middleware
-│   ├── validation.ts # Request validation
-│   ├── rateLimit.ts # Rate limiting
-│   └── errorHandler.ts # Error handling
-├── models/          # Mongoose models
-│   ├── User.ts      # User model
-│   ├── Course.ts    # Course model
-│   ├── Attendance.ts # Attendance model
-│   ├── Grade.ts     # Grade model
-│   └── Announcement.ts # Announcement model
-├── routes/          # API routes
-│   ├── auth.routes.ts
-│   ├── admin.routes.ts
-│   ├── teacher.routes.ts
-│   ├── student.routes.ts
-│   ├── course.routes.ts
-│   └── attendance.routes.ts
-├── utils/           # Utility functions
-│   ├── password.ts  # Password utilities
-│   ├── upload.ts    # File upload utilities
-│   └── email.ts     # Email utilities
-└── server.ts        # Main server file
-```
-
-## 🧪 Testing
-
-Run the test suite:
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-```
-
-## 🔧 Development Scripts
-
-```bash
-# Development
-npm run dev          # Start development server with nodemon
-npm run build        # Build for production
-npm run start        # Start production server
-npm run typecheck    # TypeScript type checking
-
-# Code Quality
-npm run lint         # Run ESLint
-npm run lint:fix     # Fix ESLint issues
-npm run format       # Format code with Prettier
-
-# Testing
-npm test             # Run tests
-npm run test:watch   # Run tests in watch mode
-npm run test:coverage # Run tests with coverage
-```
-
-## 🔒 Security Considerations
-
-- All passwords are hashed using bcrypt
-- JWT tokens have configurable expiration
-- Rate limiting prevents brute force attacks
-- Input validation prevents injection attacks
-- CORS is properly configured
-- File uploads are validated and restricted
-
-## 📧 Email Notifications
-
-The system supports automated email notifications for:
-- Welcome emails for new users
-- Password reset requests
-- Course enrollment confirmations
-- Grade notifications
-- Announcement notifications
-
-Configure SMTP settings in your `.env` file to enable email functionality.
-
-## 📁 File Upload
-
-The system supports file uploads for:
-- Profile pictures
-- Assignment submissions
-- Course materials
-- Announcement attachments
-
-Files are organized in subdirectories and validated for type and size.
-
-## 🚀 Deployment
-
-1. **Build the application**
-   ```bash
-   npm run build
-   ```
-
-2. **Set production environment variables**
-   ```bash
-   NODE_ENV=production
-   ```
-
-3. **Start the production server**
-   ```bash
-   npm start
-   ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new features
-5. Ensure all tests pass
-6. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions, please open an issue in the repository or contact the development team.
-
-
+- Each service runs independently
+- Services use npm workspaces for dependency management
+- Shared packages are linked automatically
+- Hot reload is enabled in development mode
+- Docker Compose handles service orchestration

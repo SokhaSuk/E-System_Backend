@@ -1,0 +1,33 @@
+{
+  "name": "@e-system/api-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API Gateway for E-System Microservices",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@e-system/shared": "*",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "http-proxy-middleware": "^2.0.6",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.17.2",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

@@ -1,48 +1,170 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./services/api-gateway/Dockerfile
     ports:
-      - "4000:4000"
+      - '4000:4000'
     environment:
       - NODE_ENV=development
       - PORT=4000
-      - MONGO_URI=mongodb://sokhasuk2004_db_userrBWEgExq76ZPGQ23@mongo:27017/e_system?authSource=e_system
+      - JWT_SECRET=your-super-secret-jwt-key
+      - CORS_ORIGIN=http://localhost:3000
+      - CORS_CREDENTIALS=true
+      - AUTH_SERVICE_URL=http://auth-service:4001
+      - USER_SERVICE_URL=http://user-service:4002
+      - COURSE_SERVICE_URL=http://course-service:4003
+      - ATTENDANCE_SERVICE_URL=http://attendance-service:4004
+      - GRADE_SERVICE_URL=http://grade-service:4005
+      - CONTENT_SERVICE_URL=http://content-service:4006
+    depends_on:
+      - auth-service
+      - user-service
+      - course-service
+      - attendance-service
+      - grade-service
+      - content-service
+    networks:
+      - e-system-network
+    restart: unless-stopped
+
+  # Auth Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./services/auth/Dockerfile
+    ports:
+      - '4001:4001'
+    environment:
+      - NODE_ENV=development
+      - PORT=4001
+      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_auth?authSource=admin
       - JWT_SECRET=your-super-secret-jwt-key
       - JWT_EXPIRES_IN=7d
       - ADMIN_SIGNUP_CODE=admin123
-      - SMTP_HOST=smtp.gmail.com
-      - SMTP_PORT=587
-      - SMTP_SECURE=false
-      - SMTP_USER=your-email@gmail.com
-      - SMTP_PASSWORD=your-app-password
-      - FRONTEND_URL=http://localhost:3000
-      - CORS_ORIGIN=http://localhost:3000
-      - CORS_CREDENTIALS=true
-    volumes:
-      - ./uploads:/app/uploads
     depends_on:
       - mongo
+    networks:
+      - e-system-network
     restart: unless-stopped
 
+  # User Service
+  user-service:
+    build:
+      context: .
+      dockerfile: ./services/user/Dockerfile
+    ports:
+      - '4002:4002'
+    environment:
+      - NODE_ENV=development
+      - PORT=4002
+      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_user?authSource=admin
+    depends_on:
+      - mongo
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - e-system-network
+    restart: unless-stopped
+
+  # Course Service
+  course-service:
+    build:
+      context: .
+      dockerfile: ./services/course/Dockerfile
+    ports:
+      - '4003:4003'
+    environment:
+      - NODE_ENV=development
+      - PORT=4003
+      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_course?authSource=admin
+      - USER_SERVICE_URL=http://user-service:4002
+    depends_on:
+      - mongo
+    networks:
+      - e-system-network
+    restart: unless-stopped
+
+  # Attendance Service
+  attendance-service:
+    build:
+      context: .
+      dockerfile: ./services/attendance/Dockerfile
+    ports:
+      - '4004:4004'
+    environment:
+      - NODE_ENV=development
+      - PORT=4004
+      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_attendance?authSource=admin
+      - COURSE_SERVICE_URL=http://course-service:4003
+      - USER_SERVICE_URL=http://user-service:4002
+    depends_on:
+      - mongo
+    networks:
+      - e-system-network
+    restart: unless-stopped
+
+  # Grade Service
+  grade-service:
+    build:
+      context: .
+      dockerfile: ./services/grade/Dockerfile
+    ports:
+      - '4005:4005'
+    environment:
+      - NODE_ENV=development
+      - PORT=4005
+      - MONGO_URI=mongodb://mongo:27017/e_system_grade
+      - COURSE_SERVICE_URL=http://course-service:4003
+      - USER_SERVICE_URL=http://user-service:4002
+    depends_on:
+      - mongo
+    networks:
+      - e-system-network
+    restart: unless-stopped
+
+  # Content Service
+  content-service:
+    build:
+      context: .
+      dockerfile: ./services/content/Dockerfile
+    ports:
+      - '4006:4006'
+    environment:
+      - NODE_ENV=development
+      - PORT=4006
+      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_content?authSource=admin
+      - COURSE_SERVICE_URL=http://course-service:4003
+      - USER_SERVICE_URL=http://user-service:4002
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - mongo
+    networks:
+      - e-system-network
+    restart: unless-stopped
+
+  # MongoDB
   mongo:
     image: mongo:6.0
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
-      - MONGO_INITDB_DATABASE=e_system
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=rootpassword
     volumes:
       - mongodb_data:/data/db
-      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - e-system-network
     restart: unless-stopped
 
+  # Mongo Express (Optional - for database management)
   mongo-express:
     image: mongo-express:latest
     ports:
-      - "8081:8081"
+      - '8081:8081'
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo
       - ME_CONFIG_MONGODB_PORT=27017
@@ -53,7 +175,13 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD=admin123
     depends_on:
       - mongo
+    networks:
+      - e-system-network
     restart: unless-stopped
+
+networks:
+  e-system-network:
+    driver: bridge
 
 volumes:
   mongodb_data:

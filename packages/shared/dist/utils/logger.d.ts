@@ -1,0 +1,11 @@
+/**
+ * Logger Configuration
+ * Winston-based logger with file rotation and console output
+ */
+import winston from 'winston';
+export declare const logger: winston.Logger;
+export declare const morganStream: {
+    write: (message: string) => void;
+};
+export default logger;
+//# sourceMappingURL=logger.d.ts.map

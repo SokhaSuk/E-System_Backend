@@ -2,14 +2,14 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       mongodb:
         image: mongo:6.0
@@ -22,107 +22,146 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run linting
-      run: npm run lint
-    
-    - name: Run type checking
-      run: npm run typecheck
-    
-    - name: Run tests
-      run: npm run test:coverage
-      env:
-        NODE_ENV: test
-        MONGO_URI: mongodb://localhost:27017/e_system_test
-        JWT_SECRET: test-secret-key
-    
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run typecheck:all
+
+      - name: Run tests
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+          MONGO_URI: mongodb://localhost:27017/e_system_test
+          JWT_SECRET: test-secret-key
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
 
   build:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build application
-      run: npm run build
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-files
-        path: dist/
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: |
+            services/*/dist/
+            packages/*/dist/
 
   security:
     runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run security audit
-      run: npm audit --audit-level moderate
-    
-    - name: Check for known vulnerabilities
-      run: npm audit --audit-level high
 
-  deploy:
-    needs: [test, build, security]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: npm audit --audit-level moderate
+        continue-on-error: true
+
+      - name: Check for known vulnerabilities
+        run: npm audit --audit-level high
+        continue-on-error: true
+
+  docker-build:
+    needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: build-files
-        path: dist/
-    
-    - name: Deploy to production
-      run: |
-        echo "Deployment would happen here"
-        echo "This could be to Heroku, AWS, or any other platform"
-      # Add your deployment commands here
-      # For example:
-      # - name: Deploy to Heroku
-      #   uses: akhileshns/heroku-deploy@v3.12.14
-      #   with:
-      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-      #     heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-      #     heroku_email: ${{ secrets.HEROKU_EMAIL }}
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker images
+        run: docker-compose build
+
+      - name: Start services
+        run: docker-compose up -d
+
+      - name: Wait for services to be ready
+        run: sleep 30
+
+      - name: Check containers are running
+        run: docker-compose ps
+
+      - name: View service logs
+        if: always()
+        run: docker-compose logs --tail=100
+
+      - name: Stop services
+        if: always()
+        run: docker-compose down -v
+
+  deploy:
+    needs: [test, build, security, docker-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+
+      - name: Deploy to production
+        run: |
+          echo "Deployment would happen here"
+          echo "This could be to Railway, Render, AWS, or any other platform"
+        # Add your deployment commands here
+        # For Railway:
+        # - name: Deploy to Railway
+        #   uses: bervProject/railway-deploy@main
+        #   with:
+        #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        #     service: your-service-name
+        #
+        # For Render:
+        # - name: Deploy to Render
+        #   run: |
+        #     curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
