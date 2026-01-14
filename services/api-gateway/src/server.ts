@@ -28,8 +28,9 @@ app.use(
 );
 
 // Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Body parsing - REMOVED to avoid consuming stream before proxy
+// app.use(express.json({ limit: '10mb' }));
+// app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging
 if (gatewayConfig.nodeEnv === 'development') {

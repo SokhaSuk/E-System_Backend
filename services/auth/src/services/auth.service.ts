@@ -7,6 +7,14 @@ export interface RegisterDto {
   email: string;
   password: string;
   role?: 'admin' | 'teacher' | 'student';
+  nameKh?: string;
+  gender?: 'Male' | 'Female' | 'Other';
+  dateOfBirth?: Date | string;
+  placeOfBirth?: string;
+  phone?: string;
+  occupation?: string;
+  address?: string;
+  nationality?: string;
   adminCode?: string;
 }
 
@@ -31,7 +39,21 @@ export class AuthService {
    * Register a new user
    */
   async register(data: RegisterDto): Promise<AuthResponse> {
-    const { fullName, email, password, role, adminCode } = data;
+    const {
+      fullName,
+      email,
+      password,
+      role,
+      nameKh,
+      gender,
+      dateOfBirth,
+      placeOfBirth,
+      phone,
+      occupation,
+      address,
+      nationality,
+      adminCode,
+    } = data;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -52,6 +74,14 @@ export class AuthService {
       email,
       password,
       role: role || 'student',
+      nameKh,
+      gender,
+      dateOfBirth,
+      placeOfBirth,
+      phone,
+      occupation,
+      address,
+      nationality,
     });
 
     // Generate JWT token

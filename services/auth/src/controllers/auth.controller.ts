@@ -10,6 +10,14 @@ const registerSchema = Joi.object({
   email: Joi.string().required().email().lowercase(),
   password: Joi.string().required().min(6).max(100),
   role: Joi.string().valid('admin', 'teacher', 'student').optional(),
+  nameKh: Joi.string().optional().allow(''),
+  gender: Joi.string().valid('Male', 'Female', 'Other').optional(),
+  dateOfBirth: Joi.date().iso().optional(),
+  placeOfBirth: Joi.string().optional().allow(''),
+  phone: Joi.string().optional().allow(''),
+  occupation: Joi.string().optional().allow(''),
+  address: Joi.string().optional().allow(''),
+  nationality: Joi.string().optional().allow(''),
   adminCode: Joi.string().optional(),
 });
 

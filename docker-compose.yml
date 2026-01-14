@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # API Gateway
@@ -11,9 +11,9 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4000
-      - JWT_SECRET=your-super-secret-jwt-key
-      - CORS_ORIGIN=http://localhost:3000
-      - CORS_CREDENTIALS=true
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - CORS_CREDENTIALS=${CORS_CREDENTIALS}
       - AUTH_SERVICE_URL=http://auth-service:4001
       - USER_SERVICE_URL=http://user-service:4002
       - COURSE_SERVICE_URL=http://course-service:4003
@@ -41,12 +41,10 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4001
-      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_auth?authSource=admin
-      - JWT_SECRET=your-super-secret-jwt-key
-      - JWT_EXPIRES_IN=7d
-      - ADMIN_SIGNUP_CODE=admin123
-    depends_on:
-      - mongo
+      - MONGO_URI=${MONGO_URI_AUTH}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - ADMIN_SIGNUP_CODE=${ADMIN_SIGNUP_CODE}
     networks:
       - e-system-network
     restart: unless-stopped
@@ -61,9 +59,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4002
-      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_user?authSource=admin
-    depends_on:
-      - mongo
+      - MONGO_URI=${MONGO_URI_USER}
     volumes:
       - ./uploads:/app/uploads
     networks:
@@ -80,10 +76,8 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4003
-      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_course?authSource=admin
+      - MONGO_URI=${MONGO_URI_COURSE}
       - USER_SERVICE_URL=http://user-service:4002
-    depends_on:
-      - mongo
     networks:
       - e-system-network
     restart: unless-stopped
@@ -98,11 +92,9 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4004
-      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_attendance?authSource=admin
+      - MONGO_URI=${MONGO_URI_ATTENDANCE}
       - COURSE_SERVICE_URL=http://course-service:4003
       - USER_SERVICE_URL=http://user-service:4002
-    depends_on:
-      - mongo
     networks:
       - e-system-network
     restart: unless-stopped
@@ -117,11 +109,9 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4005
-      - MONGO_URI=mongodb://mongo:27017/e_system_grade
+      - MONGO_URI=${MONGO_URI_GRADE}
       - COURSE_SERVICE_URL=http://course-service:4003
       - USER_SERVICE_URL=http://user-service:4002
-    depends_on:
-      - mongo
     networks:
       - e-system-network
     restart: unless-stopped
@@ -136,48 +126,46 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=4006
-      - MONGO_URI=mongodb://root:rootpassword@mongo:27017/e_system_content?authSource=admin
+      - MONGO_URI=${MONGO_URI_CONTENT}
       - COURSE_SERVICE_URL=http://course-service:4003
       - USER_SERVICE_URL=http://user-service:4002
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-    depends_on:
-      - mongo
     networks:
       - e-system-network
     restart: unless-stopped
 
-  # MongoDB
-  mongo:
-    image: mongo:6.0
-    ports:
-      - '27017:27017'
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - e-system-network
-    restart: unless-stopped
+  # MongoDB (Commented out as we are using Atlas)
+  # mongo:
+  #   image: mongo:6.0
+  #   ports:
+  #     - '27017:27017'
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   networks:
+  #     - e-system-network
+  #   restart: unless-stopped
 
   # Mongo Express (Optional - for database management)
-  mongo-express:
-    image: mongo-express:latest
-    ports:
-      - '8081:8081'
-    environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpassword
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin123
-    depends_on:
-      - mongo
-    networks:
-      - e-system-network
-    restart: unless-stopped
+  # mongo-express:
+  #   image: mongo-express:latest
+  #   ports:
+  #     - '8081:8081'
+  #   environment:
+  #     - ME_CONFIG_MONGODB_SERVER=mongo
+  #     - ME_CONFIG_MONGODB_PORT=27017
+  #     - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+  #     - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+  #     - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpassword
+  #     - ME_CONFIG_BASICAUTH_USERNAME=admin
+  #     - ME_CONFIG_BASICAUTH_PASSWORD=admin123
+  #   depends_on:
+  #     - mongo
+  #   networks:
+  #     - e-system-network
+  #   restart: unless-stopped
 
 networks:
   e-system-network:

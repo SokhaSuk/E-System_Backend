@@ -6,6 +6,14 @@ export interface IUser {
   email: string;
   password: string;
   role: 'admin' | 'teacher' | 'student';
+  nameKh?: string;
+  gender?: 'Male' | 'Female' | 'Other';
+  dateOfBirth?: Date;
+  placeOfBirth?: string;
+  phone?: string;
+  occupation?: string;
+  address?: string;
+  nationality?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -41,6 +49,37 @@ const userSchema = new Schema<UserDocument>(
       enum: ['admin', 'teacher', 'student'],
       default: 'student',
     },
+    nameKh: {
+      type: String,
+      trim: true,
+    },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other'],
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    placeOfBirth: {
+      type: String,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    occupation: {
+      type: String,
+      trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    nationality: {
+      type: String,
+      trim: true,
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -52,17 +91,17 @@ const userSchema = new Schema<UserDocument>(
 );
 
 // Hash password before saving
-userSchema.pre('save', async function (next: (err?: Error) => void) {
+// Hash password before saving
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
 
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
   } catch (error: any) {
-    next(error);
+    throw new Error(error);
   }
 });
 
