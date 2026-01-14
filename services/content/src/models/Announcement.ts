@@ -53,6 +53,12 @@ announcementSchema.index({ type: 1, isActive: 1, publishedAt: -1 });
 announcementSchema.index({ course: 1, isActive: 1, publishedAt: -1 });
 announcementSchema.index({ targetAudience: 1, isActive: 1, publishedAt: -1 });
 
+// Virtual for checking if announcement is expired
+announcementSchema.virtual('isExpired').get(function () {
+  if (!this.expiresAt) return false;
+  return new Date() > this.expiresAt;
+});
+
 export const Announcement = mongoose.model<AnnouncementDocument>(
   'Announcement',
   announcementSchema

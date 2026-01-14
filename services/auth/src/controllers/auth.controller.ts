@@ -18,6 +18,9 @@ const registerSchema = Joi.object({
   occupation: Joi.string().optional().allow(''),
   address: Joi.string().optional().allow(''),
   nationality: Joi.string().optional().allow(''),
+  studentId: Joi.string().optional().allow(''),
+  studyShift: Joi.string().optional().allow(''),
+  avatar: Joi.string().optional().allow(''),
   adminCode: Joi.string().optional(),
 });
 

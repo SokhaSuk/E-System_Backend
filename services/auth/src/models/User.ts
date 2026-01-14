@@ -14,6 +14,9 @@ export interface IUser {
   occupation?: string;
   address?: string;
   nationality?: string;
+  studentId?: string;
+  studyShift?: string;
+  avatar?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -77,6 +80,20 @@ const userSchema = new Schema<UserDocument>(
       trim: true,
     },
     nationality: {
+      type: String,
+      trim: true,
+    },
+    studentId: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
+    },
+    studyShift: {
+      type: String,
+      trim: true,
+    },
+    avatar: {
       type: String,
       trim: true,
     },

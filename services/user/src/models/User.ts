@@ -3,6 +3,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 export type UserRole = 'admin' | 'teacher' | 'student';
 
 export interface IUser {
+  _id: Types.ObjectId;
   fullName: string;
   email: string;
   role: UserRole;
@@ -27,6 +28,7 @@ export interface UserDocument extends IUser, Document {
 
 const userSchema = new Schema<UserDocument>(
   {
+    _id: { type: Types.ObjectId, required: true },
     fullName: { type: String, required: true, trim: true },
     email: {
       type: String,
